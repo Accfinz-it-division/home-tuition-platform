@@ -1,77 +1,155 @@
-import Link from "next/link";
+"use client";
 
-const myCourses = [
-  { id: 1, name: "O/L Mathematics", teacher: "Mr. Kamal Perera", feeStatus: "Paid", nextClass: "Today, 4:00 PM", progress: 85, color: "bg-blue-500", image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=500&auto=format&fit=crop" },
-  { id: 2, name: "A/L Physics", teacher: "Ms. Nimali Silva", feeStatus: "Pending", nextClass: "Tomorrow, 2:00 PM", progress: 60, color: "bg-purple-500", image: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=500&auto=format&fit=crop" },
-  { id: 3, name: "Spoken English", teacher: "Ms. Sarah", feeStatus: "Paid", nextClass: "Friday, 5:00 PM", progress: 95, color: "bg-teal-500", image: "https://images.unsplash.com/photo-1544717302-de2939b7ef71?w=500&auto=format&fit=crop" },
-];
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function MyCourses() {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("active"); // active, completed
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses`);
+        if (response.ok) {
+          const data = await response.json();
+          setCourses(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch courses", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
+  // டேப்-க்கு ஏத்த மாதிரி டேட்டாவை ஃபில்டர் பண்றோம்
+  const filteredCourses = courses.filter(course => {
+    if (activeTab === "active") return course.progress !== "100%"; // 100% முடியலைனா Active
+    if (activeTab === "completed") return course.progress === "100%"; // 100% முடிஞ்சா Completed
+    return true;
+  });
+
   return (
-    <div className="min-h-screen bg-[#f4f7f6] flex">
-      <aside className="w-64 bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white min-h-screen hidden md:flex flex-col shadow-2xl z-10">
-        <div className="p-6 text-2xl font-bold border-b border-gray-700/50 flex items-center gap-2">
-          <div className="w-9 h-9 bg-gradient-to-tr from-[#0f766e] to-[#14b8a6] rounded-xl flex items-center justify-center text-white text-lg shadow-lg">h</div>
-          <span className="tracking-tight">hometuition<span className="text-[#14b8a6]">.lk</span></span>
+    <div className="h-screen bg-white flex font-sans overflow-hidden">
+      
+      {/* Sidebar */}
+      <aside className="w-64 bg-[#0f172a] text-white hidden md:flex flex-col border-r border-gray-800 h-full shrink-0">
+        <div className="px-6 py-8 border-b border-gray-800">
+          <h1 className="text-xl font-bold text-white mb-1">Home Tuition</h1>
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Student Workspace</p>
         </div>
-        <nav className="flex-1 p-4 space-y-2 text-sm font-medium mt-4">
-          <Link href="/dashboard/student" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition"><span className="text-lg">📊</span> Dashboard</Link>
-          <Link href="/dashboard/student/courses" className="flex items-center gap-3 px-4 py-3 bg-[#0f766e] rounded-xl font-semibold shadow-lg text-white"><span className="text-lg">📚</span> My Courses</Link>
-          <Link href="/dashboard/student/lms" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition"><span className="text-lg">📂</span> LMS & Papers</Link>
-          <Link href="/dashboard/student/live-classes" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition"><span className="text-lg">🎥</span> Live Classes</Link>
+        
+        <nav className="flex-1 py-6 px-4 space-y-1 overflow-y-auto">
+          <Link href="/dashboard/student" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Overview</Link>
+          <Link href="/dashboard/student/courses" className="block px-4 py-2.5 bg-[#0f766e] text-white text-sm font-bold rounded-sm">My courses</Link>
+          <Link href="/dashboard/student/live-classes" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Live classes</Link>
+          <Link href="/dashboard/student/exams" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Exams</Link>
+          <Link href="/dashboard/student/lms" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Resources</Link>
+          <Link href="/dashboard/student/payments" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Payments</Link>
         </nav>
       </aside>
 
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto">
-        <div className="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <div>
-            <h1 className="text-2xl font-extrabold text-[#0f172a]">My Enrolled Courses</h1>
-            <p className="text-sm text-[var(--text-light)] mt-1">Manage your classes and payments here.</p>
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col h-full overflow-hidden">
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
+          <div className="text-xs text-gray-500 font-bold uppercase">
+            <span className="text-black">STUDENT WORKSPACE</span> / MY COURSES
           </div>
-          <Link href="/courses" className="btn-teal text-sm px-5 py-2">+ Explore New Courses</Link>
-        </div>
+        </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {myCourses.map((course) => (
-            <div key={course.id} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
-              <div className="h-32 relative">
-                <img src={course.image} alt={course.name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/40"></div>
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-xl font-bold">{course.name}</h3>
-                  <p className="text-xs opacity-90">👨‍🏫 {course.teacher}</p>
-                </div>
-                <div className={`absolute top-4 right-4 text-xs font-bold px-3 py-1 rounded-full shadow-sm ${course.feeStatus === "Paid" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
-                  {course.feeStatus === "Paid" ? "✅ Fee Paid" : "⚠️ Fee Pending"}
-                </div>
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-8 w-full">
+            
+            {/* 🚀 Header Title with Add Button */}
+            <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+              <div>
+                <h2 className="text-3xl font-bold text-black mb-1">Your learning, in one place.</h2>
+                <p className="text-sm text-gray-500">{courses.length} active courses • Keep building on what you know.</p>
               </div>
-              <div className="p-6">
-                <div className="mb-6">
-                  <div className="flex justify-between text-xs font-bold mb-2">
-                    <span className="text-gray-500">Course Progress</span>
-                    <span className="text-[#0f766e]">{course.progress}%</span>
-                  </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2.5">
-                    <div className={`h-2.5 rounded-full ${course.color}`} style={{ width: `${course.progress}%` }}></div>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
-                  <div>
-                    <p className="text-xs text-gray-500 font-semibold mb-1">Next Live Class</p>
-                    <p className="text-sm font-bold text-[#0f172a]">{course.nextClass}</p>
-                  </div>
-                  {course.feeStatus === "Paid" ? (
-                    <Link href="/dashboard/student/live-classes" className="bg-[#0f172a] text-white text-sm font-bold py-2 px-6 rounded-lg hover:bg-black transition shadow-md">Join Zoom</Link>
-                  ) : (
-                    <button className="bg-[#d97706] text-white text-sm font-bold py-2 px-6 rounded-lg hover:bg-[#b45309] transition shadow-md animate-pulse">Pay Fee Now</button>
-                  )}
-                </div>
-                <div className="flex gap-4 mt-6 text-sm font-semibold text-[var(--teal-primary)]">
-                  <Link href="/dashboard/student/lms" className="hover:underline">📂 View Notes & Papers</Link>
-                </div>
-              </div>
+              <Link 
+                href="/courses" 
+                className="bg-[#0f766e] text-white text-sm font-bold py-2.5 px-6 rounded-sm shadow-sm hover:bg-[#0d5f58] transition whitespace-nowrap"
+              >
+                + Add New Course
+              </Link>
             </div>
-          ))}
+
+            {/* Tabs */}
+            <div className="flex gap-6 border-b border-gray-200 mb-8">
+              <button 
+                onClick={() => setActiveTab("active")}
+                className={`pb-3 text-sm font-bold transition ${activeTab === "active" ? "text-[#0f766e] border-b-2 border-[#0f766e]" : "text-gray-500 hover:text-black"}`}
+              >
+                Active courses ({courses.filter(c => c.progress !== "100%").length})
+              </button>
+              <button 
+                onClick={() => setActiveTab("completed")}
+                className={`pb-3 text-sm font-bold transition ${activeTab === "completed" ? "text-[#0f766e] border-b-2 border-[#0f766e]" : "text-gray-500 hover:text-black"}`}
+              >
+                Completed ({courses.filter(c => c.progress === "100%").length})
+              </button>
+            </div>
+
+            {/* Course Cards */}
+            {loading ? (
+              <div className="text-center text-gray-500 py-10">Loading courses...</div>
+            ) : filteredCourses.length === 0 ? (
+              <div className="text-center text-gray-500 py-10 border border-dashed border-gray-300 rounded-sm">
+                No courses found in this category.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                {filteredCourses.map((course) => (
+                  <div key={course.id} className="bg-white border border-gray-200 rounded-sm shadow-sm flex flex-col hover:shadow-md transition">
+                    
+                    {/* Card Header */}
+                    <div className="bg-[#0f172a] text-white p-6 rounded-t-sm">
+                      <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2">HOME TUITION / 2026</p>
+                      <h3 className="text-xl font-serif">{course.title}</h3>
+                    </div>
+
+                    {/* Card Body */}
+                    <div className="p-6 flex-grow flex flex-col justify-between">
+                      <div>
+                        <span className="bg-[#f5f2eb] text-[#b45309] text-[10px] font-bold px-2 py-1 rounded-sm mb-4 inline-block tracking-wide">
+                          {course.badge}
+                        </span>
+                        <h4 className="font-bold text-lg text-[#0f172a] mb-1">{course.subject}</h4>
+                        <p className="text-xs text-gray-500 mb-4">{course.teacherName} • <span className="text-[#0f766e]">★ 4.9</span> (128)</p>
+                      </div>
+                      
+                      {/* Card Footer */}
+                      <div className="flex justify-between items-center mt-6 border-t border-gray-100 pt-4">
+                        <p className="text-sm font-bold text-[#0f172a]">{course.price}</p>
+                        <p className={`text-xs font-bold ${course.progress === "100%" ? "text-gray-500" : "text-[#0f766e]"}`}>
+                          {course.progress} complete
+                        </p>
+                      </div>
+                      
+                      {/* Continue Button */}
+                      <Link 
+                        href="/dashboard/student/lms" 
+                        className="w-full mt-4 text-center border border-gray-300 text-[#0f172a] py-2 text-sm font-bold rounded-sm hover:bg-gray-50 transition block"
+                      >
+                        Continue learning →
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Bottom Banner */}
+            <div className="bg-[#fff8f1] border border-[#d97706]/30 p-6 rounded-sm">
+              <p className="font-bold text-black mb-1">Your next Mathematics lesson is ready.</p>
+              <p className="text-xs text-gray-600">Continue Unit 04: Quadratic equations. Read the notes, watch the lesson and test your understanding.</p>
+            </div>
+
+          </div>
         </div>
       </main>
     </div>

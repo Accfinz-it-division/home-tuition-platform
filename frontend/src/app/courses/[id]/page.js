@@ -4,10 +4,10 @@ import { useParams } from "next/navigation";
 
 export default function CourseDetails() {
   const params = useParams();
-  // URL-ல வர்ற ID-ஐ எடுத்துக்கிறோம் (உதாரணமா: ol-maths)
+
   const courseId = params.id;
 
-  // டெமோ-க்காக சில டீடெயில்ஸ்
+ 
   const courseData = {
     title: courseId.replace("-", " ").toUpperCase(),
     teacher: "Verified Teacher",

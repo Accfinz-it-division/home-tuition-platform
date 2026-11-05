@@ -1,106 +1,158 @@
 "use client";
+
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function Login() {
   const router = useRouter();
-  const [role, setRole] = useState("student");
+  const [role, setRole] = useState("STUDENT"); // Default Student
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (role === "student") router.push("/dashboard/student");
-    else if (role === "teacher") router.push("/dashboard/teacher");
-    else if (role === "parent") router.push("/dashboard/parent");
-    else if (role === "admin") router.push("/dashboard/admin");
+    setLoading(true);
+    
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // யூசர் செலக்ட் பண்ண ரோல், Backend-லேர்ந்து வந்த ரோல்-ஓட மேட்ச் ஆகுதான்னு செக் பண்றோம்
+        if (role !== data.role) {
+          alert(`Access Denied! You are registered as a ${data.role}, but you selected ${role}.`);
+          setLoading(false);
+          return; 
+        }
+
+                // Local Storage-ல சேவ் பண்றோம்
+        localStorage.setItem("userEmail", email); // 🚀 ஈமெயிலை சேவ் பண்றோம்
+        localStorage.setItem("userRole", data.role);
+        localStorage.setItem("userName", data.name);
+        localStorage.setItem("isLoggedIn", "true");
+
+        // 🚀 Cookie-லயும் சேவ் பண்றோம் (Middleware-க்காக)
+        document.cookie = `userRole=${data.role}; path=/; max-age=86400`; // 1 நாள் வரைக்கும் இருக்கும்
+
+        alert(`Welcome back, ${data.name}!`);
+        
+        // சரியான ரோல்-னா அந்த டாஷ்போர்டுக்கு போகும்
+        if (data.role === "STUDENT") router.push("/dashboard/student");
+        else if (data.role === "TEACHER") router.push("/dashboard/teacher");
+        else if (data.role === "PARENT") router.push("/dashboard/parent");
+        else if (data.role === "ADMIN") router.push("/dashboard/admin");
+        
+      } else {
+        alert("Login Failed: " + data);
+      }
+    } catch (err) {
+      alert("Failed to connect to the server.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--background-soft)] p-4 md:p-8 font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] p-4 md:p-8 font-sans">
       
-      {/* 🌟 THE BIG CARD (White Background) */}
-      <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-gray-100">
+      <div className="w-full max-w-5xl bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-gray-200">
         
-        {/* Left Side: Image (Deep Navy Overlay) */}
-        <div className="hidden md:flex md:w-1/2 bg-[var(--navy-deep)] relative items-center justify-center p-10">
+        {/* Left Side: Image */}
+        <div className="hidden md:flex md:w-1/2 bg-[#0f172a] relative items-center justify-center p-10">
           <img 
-            src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1000&auto=format&fit=crop" 
+            src="https://images.unsplash.com/photo-1571260899304-425dea5c16c2?q=80&w=1000&auto=format&fit=crop" 
             alt="Students learning" 
-            className="absolute inset-0 w-full h-full object-cover opacity-20"
+            className="absolute inset-0 w-full h-full object-cover opacity-30"
           />
           <div className="relative z-10 text-center text-white">
-            {/* Gold Logo Icon */}
-            <div className="w-16 h-16 bg-[var(--gold-accent)] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-              <span className="text-3xl font-extrabold text-white">h</span>
+            <div className="w-12 h-12 bg-[#0f766e] rounded-lg flex items-center justify-center mx-auto mb-6 shadow-lg">
+              <span className="text-2xl font-bold">h</span>
             </div>
-            <h1 className="text-3xl font-bold mb-4 leading-tight">Welcome Back to <br/> HomeTuition.lk</h1>
+            <h1 className="text-3xl font-serif mb-4 leading-tight">Welcome back to <br/> Home Tuition.</h1>
             <p className="text-gray-300 text-sm max-w-sm mx-auto">
-              Pay only if satisfied. Track everything. Hide nothing. Sri Lanka's most transparent education platform.
+              Pay only if satisfied. Track everything. Hide nothing. Log in to continue your learning journey.
             </p>
           </div>
         </div>
 
-        {/* Right Side: Login Form (White Background) */}
-        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-white">
+        {/* Right Side: Login Form */}
+        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
           
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-[var(--navy-deep)] mb-2">Login</h2>
-            <p className="text-[var(--text-light)] text-sm">Select your role to continue</p>
+            <h2 className="text-2xl font-serif font-bold text-[#0f172a] mb-2">Log in</h2>
+            <p className="text-sm text-gray-500">Select your role to continue</p>
           </div>
 
-          {/* Modern Role Selector (Navy & Gold) */}
-          <div className="grid grid-cols-2 gap-3 mb-8">
+          {/* Role Selector Tabs */}
+          <div className="grid grid-cols-4 gap-2 mb-8 bg-gray-50 border border-gray-200 p-1 rounded-sm">
             {[
-              { id: "student", icon: "🎓", label: "Student" },
-              { id: "parent", icon: "👨‍👩‍👧", label: "Parent" },
-              { id: "teacher", icon: "👨‍🏫", label: "Teacher" },
-              { id: "admin", icon: "⚙️", label: "Admin" },
+              { id: "STUDENT", label: "Student" },
+              { id: "PARENT", label: "Parent" },
+              { id: "TEACHER", label: "Teacher" },
+              { id: "ADMIN", label: "Admin" },
             ].map((item) => (
               <button 
                 key={item.id}
                 onClick={() => setRole(item.id)} 
-                className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition ${
+                className={`py-2 text-xs font-bold rounded-sm transition ${
                   role === item.id 
-                    ? "border-[var(--gold-accent)] bg-yellow-50 text-[var(--navy-deep)]" 
-                    : "border-gray-200 text-gray-500 hover:border-[var(--navy-deep)]"
+                    ? "bg-white text-[#0f766e] shadow-sm border border-gray-200" 
+                    : "text-gray-500 hover:text-[#0f172a]"
                 }`}
               >
-                <span className="text-2xl mb-1">{item.icon}</span>
-                <span className={`text-xs font-bold ${role === item.id ? "text-[var(--gold-accent)]" : ""}`}>{item.label}</span>
+                {item.label}
               </button>
             ))}
           </div>
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-sm font-bold text-[var(--navy-deep)] mb-1">Email Address</label>
+              <label className="block text-xs font-bold text-[#0f172a] mb-2">Email Address</label>
               <input 
                 type="email" 
                 required 
-                placeholder="Enter your email" 
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-[var(--navy-deep)] focus:ring-2 focus:ring-[var(--gold-accent)] focus:bg-white outline-none transition" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com" 
+                className="w-full border border-gray-300 rounded-sm py-2.5 px-3 text-sm outline-none focus:border-[#0f766e] bg-white" 
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-[var(--navy-deep)] mb-1">Password</label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-xs font-bold text-[#0f172a]">Password</label>
+                <Link href="#" className="text-xs font-bold text-[#0f766e] hover:underline">Forgot?</Link>
+              </div>
               <input 
                 type="password" 
                 required 
-                placeholder="Enter your password" 
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-[var(--navy-deep)] focus:ring-2 focus:ring-[var(--gold-accent)] focus:bg-white outline-none transition" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••" 
+                className="w-full border border-gray-300 rounded-sm py-2.5 px-3 text-sm outline-none focus:border-[#0f766e] bg-white" 
               />
             </div>
             
-            <button type="submit" className="w-full btn-gold py-3 mt-2 shadow-lg text-md font-bold text-white">
-              Login as {role.charAt(0).toUpperCase() + role.slice(1)}
+            <button type="submit" disabled={loading} className="w-full bg-[#0f172a] text-white py-3 mt-2 text-sm font-bold rounded-sm hover:bg-black transition shadow-md disabled:opacity-50">
+              {loading ? "Logging in..." : `Log in as ${role.charAt(0) + role.slice(1).toLowerCase()}`}
             </button>
           </form>
 
-          <p className="text-center mt-8 text-sm text-[var(--text-light)]">
-            Don't have an account? <Link href="/register" className="text-[var(--gold-accent)] font-bold hover:underline">Register here</Link>
+          <p className="text-center mt-8 text-sm text-gray-500">
+            Don't have an account? <Link href="/register" className="text-[#0f766e] font-bold hover:underline">Sign up</Link>
           </p>
-        </div>
+          
+          <div className="mt-8 text-center">
+             <Link href="/" className="text-xs text-gray-400 hover:text-[#0f172a]">← Back to website</Link>
+          </div>
 
+        </div>
       </div>
     </div>
   );

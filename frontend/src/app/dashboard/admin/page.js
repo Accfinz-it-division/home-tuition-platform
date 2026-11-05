@@ -1,105 +1,164 @@
 import Link from "next/link";
 
-// 🚀 DEMO DATA: Admin-க்கு காட்ட இது தான் உதவும்!
-const pendingTeachers = [
-  { id: 1, name: "Kasun Perera", subject: "O/L Mathematics", nic: "199512345678", status: "Documents Pending", date: "2026-10-25" },
-  { id: 2, name: "Nimali Silva", subject: "A/L Physics", nic: "199876543210", status: "Interview Scheduled", date: "2026-10-24" },
-  { id: 3, name: "Suresh Kumar", subject: "Grade 5 Scholarship", nic: "198855443322", status: "Documents Pending", date: "2026-10-23" },
-];
-
 export default function AdminDashboard() {
   return (
-    <div className="min-h-screen bg-[var(--background-soft)] flex">
+    <div className="h-screen bg-white flex font-sans overflow-hidden">
       
-      {/* Left Sidebar (Admin Menu) */}
-      <aside className="w-64 bg-[var(--navy-deep)] text-white min-h-screen hidden md:flex flex-col">
-        <div className="p-6 text-2xl font-bold border-b border-gray-700 flex items-center gap-2">
-          <div className="w-8 h-8 bg-red-500 rounded flex items-center justify-center text-white text-lg">A</div>
-          Admin Panel
+      {/* 1. Left Sidebar (Admin - Navy Blue) */}
+      <aside className="w-64 bg-[#0f172a] text-white hidden md:flex flex-col border-r border-gray-800 h-full shrink-0">
+        <div className="px-6 py-8 border-b border-gray-800">
+          <h1 className="text-xl font-bold text-white mb-1">Home Tuition</h1>
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Admin Workspace</p>
         </div>
-        <nav className="flex-1 p-4 space-y-2 text-sm">
-          <Link href="/dashboard/admin" className="block px-4 py-3 bg-[var(--teal-primary)] rounded-lg font-semibold">
-            Dashboard
-          </Link>
-          <Link href="#" className="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">Verify Teachers</Link>
-          <Link href="#" className="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">Manage Payments</Link>
-          <Link href="#" className="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">All Students</Link>
-          <Link href="#" className="block px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition">Audit Logs</Link>
+        
+        <nav className="flex-1 py-6 px-4 space-y-1 overflow-y-auto">
+          {/* Active Menu (Teal) */}
+          <Link href="/dashboard/admin" className="block px-4 py-2.5 bg-[#0f766e] text-white text-sm font-bold rounded-sm">Overview</Link>
+          
+          <Link href="/dashboard/admin/applications" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Teacher applications</Link>
+          <Link href="/dashboard/admin/courses" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Courses</Link>
+          <Link href="/dashboard/admin/users" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Users</Link>
+          <Link href="/dashboard/admin/payments" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Payments</Link>
+          <Link href="/dashboard/admin/reports" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Reports</Link>
+          <Link href="/dashboard/admin/complaints" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Complaints</Link>
         </nav>
+
+        <div className="p-4 space-y-1 border-t border-gray-800 shrink-0">
+          <Link href="#" className="block px-4 py-2 text-gray-400 text-sm hover:text-white transition">Help centre ↗</Link>
+          <Link href="#" className="block px-4 py-2 text-gray-400 text-sm hover:text-white transition">Settings</Link>
+          <Link href="/" className="block px-4 py-2 text-gray-400 text-sm hover:text-white transition">Sign out</Link>
+        </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 p-6 md:p-8">
+      {/* 2. Main Content Area */}
+      <main className="flex-1 flex flex-col h-full overflow-hidden">
         
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <div>
-            <h1 className="text-2xl font-bold text-[var(--navy-deep)]">Admin Control Panel ⚙️</h1>
-            <p className="text-sm text-[var(--text-light)]">Manage teachers, students, and platform trust.</p>
+        {/* Top Header */}
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
+          <div className="text-xs text-gray-500 font-bold uppercase">
+            <span className="text-black">ADMIN WORKSPACE</span> / OVERVIEW
           </div>
-          <Link href="/" className="bg-gray-100 text-[var(--navy-deep)] px-4 py-2 rounded-lg font-semibold text-sm hover:bg-gray-200">
-            Exit Admin
-          </Link>
-        </div>
+          <div className="flex gap-6 text-sm font-bold text-black">
+            <span className="cursor-pointer">EN ⌄</span>
+            <span className="cursor-pointer">Anjali Silva ⌄</span>
+          </div>
+        </header>
 
-        {/* Top Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <p className="text-xs text-gray-500 font-semibold uppercase mb-1">Total Students</p>
-            <h3 className="text-2xl font-bold text-[var(--navy-deep)]">1,245</h3>
-          </div>
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <p className="text-xs text-gray-500 font-semibold uppercase mb-1">Active Teachers</p>
-            <h3 className="text-2xl font-bold text-[var(--teal-primary)]">86</h3>
-          </div>
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <p className="text-xs text-gray-500 font-semibold uppercase mb-1">Pending Verifications</p>
-            <h3 className="text-2xl font-bold text-[var(--gold-accent)]">12</h3>
-          </div>
-          <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-            <p className="text-xs text-gray-500 font-semibold uppercase mb-1">Monthly Revenue</p>
-            <h3 className="text-2xl font-bold text-[var(--navy-deep)]">LKR 450k</h3>
+        {/* Scrollable Content Area (Full Width) */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-8 w-full">
+            
+            {/* Header Title */}
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-black mb-1">A trusted platform, thoughtfully managed.</h2>
+              <p className="text-sm text-gray-500">Welcome, Anjali • Platform overview for October 2026</p>
+            </div>
+
+            {/* Top Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
+                <p className="text-xs text-gray-500 mb-1 font-medium">Active students</p>
+                <h3 className="text-3xl font-bold text-black">1,248</h3>
+                <p className="text-xs text-[#0f766e] font-bold mt-1">+62 this month</p>
+              </div>
+              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
+                <p className="text-xs text-gray-500 mb-1 font-medium">Verified teachers</p>
+                <h3 className="text-3xl font-bold text-black">86</h3>
+                <p className="text-xs text-[#d97706] font-bold mt-1">4 awaiting review</p>
+              </div>
+              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
+                <p className="text-xs text-gray-500 mb-1 font-medium">Monthly revenue</p>
+                <h3 className="text-3xl font-bold text-black">LKR 2.4m</h3>
+                <p className="text-xs text-[#0f766e] font-bold mt-1">+12% this month</p>
+              </div>
+              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
+                <p className="text-xs text-gray-500 mb-1 font-medium">Open complaints</p>
+                <h3 className="text-3xl font-bold text-black">7</h3>
+                <p className="text-xs text-gray-500 mt-1">2 need attention</p>
+              </div>
+            </div>
+
+            {/* Middle Section: Glance & Attention */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              
+              {/* Platform at a Glance (Navy Box) */}
+              <div className="lg:col-span-2 bg-[#0f172a] text-white p-6 rounded-sm shadow-sm flex flex-col justify-between">
+                <div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">YOUR PLATFORM AT A GLANCE</p>
+                  <h3 className="text-2xl font-bold mb-2">Good teaching begins with trust.</h3>
+                  <p className="text-sm text-gray-300">Review 4 new teacher applications and 7 open complaints.</p>
+                </div>
+                <Link href="/dashboard/admin/applications" className="inline-block mt-6 text-sm font-bold text-white hover:text-[#0f766e] transition w-fit">
+                  Review applications →
+                </Link>
+              </div>
+
+              {/* Attention / Alerts (White Box) */}
+              <div className="bg-white border border-gray-200 p-6 rounded-sm shadow-sm">
+                <h3 className="text-lg font-bold text-black mb-4">Your attention, please</h3>
+                <ul className="space-y-3 text-sm text-gray-600">
+                  <li className="flex justify-between pb-2 border-b border-gray-100"><span>4 applications ready for review</span></li>
+                  <li className="flex justify-between pb-2 border-b border-gray-100"><span>2 payment checks pending</span></li>
+                  <li className="flex justify-between"><span className="text-[#d97706] font-bold">October report ready</span></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Bottom Section: Chart & Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              {/* Learning Outcomes Chart */}
+              <div className="bg-white border border-gray-200 p-6 rounded-sm shadow-sm">
+                <h3 className="text-lg font-bold text-black mb-1">Learning outcomes</h3>
+                <p className="text-xs text-gray-500 mb-6">Grade 11 Mathematics • steady progress</p>
+                
+                <div className="flex items-end justify-between h-40 gap-4 px-4 pb-2 border-b border-gray-200">
+                  <div className="flex flex-col items-center gap-2 w-full">
+                    <span className="text-xs font-bold text-gray-500">65%</span>
+                    <div className="w-full max-w-[50px] bg-[#0f172a] h-[65%] hover:bg-[#0f766e] transition-colors"></div>
+                    <span className="text-xs text-gray-500">Jul</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 w-full">
+                    <span className="text-xs font-bold text-gray-500">72%</span>
+                    <div className="w-full max-w-[50px] bg-[#0f172a] h-[72%] hover:bg-[#0f766e] transition-colors"></div>
+                    <span className="text-xs text-gray-500">Aug</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 w-full">
+                    <span className="text-xs font-bold text-gray-500">78%</span>
+                    <div className="w-full max-w-[50px] bg-[#0f172a] h-[78%] hover:bg-[#0f766e] transition-colors"></div>
+                    <span className="text-xs text-gray-500">Sep</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 w-full">
+                    <span className="text-xs font-bold text-[#d97706]">85%</span>
+                    <div className="w-full max-w-[50px] bg-[#d97706] h-[85%]"></div>
+                    <span className="text-xs text-gray-500">Oct</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="bg-white border border-gray-200 p-6 rounded-sm shadow-sm">
+                <h3 className="text-lg font-bold text-black mb-4">Recent platform activity</h3>
+                <div className="space-y-4 text-sm text-gray-600">
+                  <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <span className="font-bold text-black">Kamal Fernando</span>
+                    <span>application reviewed</span>
+                  </div>
+                  <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <span className="font-bold text-black">PAY-8841</span>
+                    <span>LKR 3,500 received</span>
+                  </div>
+                  <div className="flex justify-between border-b border-gray-200 pb-2">
+                    <span className="font-bold text-black">October</span>
+                    <span>learning report generated</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
           </div>
         </div>
-
-        {/* Teacher Verification Table (CORE TRUST FEATURE) */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-            <h2 className="text-lg font-bold text-[var(--navy-deep)]">Teacher Verification Queue</h2>
-            <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full">Action Required</span>
-          </div>
-          
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                <th className="p-4 font-semibold">Teacher Name</th>
-                <th className="p-4 font-semibold">Subject</th>
-                <th className="p-4 font-semibold">NIC Number</th>
-                <th className="p-4 font-semibold">Status</th>
-                <th className="p-4 font-semibold text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {pendingTeachers.map((teacher) => (
-                <tr key={teacher.id} className="hover:bg-gray-50 transition">
-                  <td className="p-4 font-medium text-[var(--navy-deep)]">{teacher.name}</td>
-                  <td className="p-4 text-sm text-[var(--text-light)]">{teacher.subject}</td>
-                  <td className="p-4 text-sm text-gray-500 font-mono">{teacher.nic}</td>
-                  <td className="p-4">
-                    <span className={`text-xs font-semibold px-2 py-1 rounded ${teacher.status === 'Documents Pending' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
-                      {teacher.status}
-                    </span>
-                  </td>
-                  <td className="p-4 text-right space-x-2">
-                    <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-xs font-semibold hover:bg-gray-200">View Docs</button>
-                    <button className="btn-teal text-xs py-1 px-3">Approve</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
       </main>
     </div>
   );

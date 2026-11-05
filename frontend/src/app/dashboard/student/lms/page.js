@@ -3,93 +3,120 @@
 import Link from "next/link";
 import { useState } from "react";
 
+// 🚀 DEMO DATA: Resources
 const resources = [
-  { id: 1, title: "O/L Maths - Chapter 1 Notes", type: "Notes", size: "2.4 MB", icon: "📄", subject: "Maths" },
-  { id: 2, title: "O/L Maths - 2023 Past Paper", type: "Past Paper", size: "1.8 MB", icon: "📝", subject: "Maths" },
-  { id: 3, title: "O/L Maths - Model Paper 1", type: "Model Paper", size: "3.1 MB", icon: "📑", subject: "Maths" },
-  { id: 4, title: "Physics - Quiz 1 (MCQ)", type: "Quiz", size: "Online", icon: "✅", subject: "Physics" },
-  { id: 5, title: "English - Updated Syllabus Book", type: "Syllabus", size: "5.0 MB", icon: "📖", subject: "English" },
-  { id: 6, title: "Physics - 2022 Past Paper", type: "Past Paper", size: "2.2 MB", icon: "📝", subject: "Physics" },
+  { id: 1, title: "O/L Maths - Chapter 1 Notes", type: "Document", format: "PDF • 2.4 MB", date: "24 Oct 2026", action: "Download →" },
+  { id: 2, title: "O/L Maths - 2023 Past Paper", type: "Document", format: "PDF • 1.8 MB", date: "22 Oct 2026", action: "Download →" },
+  { id: 3, title: "Algebra practice quiz", type: "Quiz", format: "10 questions", date: "18 Oct 2026", action: "Start quiz →" },
+  { id: 4, title: "Quadratic equations", type: "Recording", format: "Video • 1h 54m", date: "24 Oct 2026", action: "Watch recording →" },
 ];
 
-export default function StudentLMS() {
-  const [activeTab, setActiveTab] = useState("All");
+export default function StudentResources() {
+  const [activeTab, setActiveTab] = useState("All resources");
 
-  const filteredResources = activeTab === "All" ? resources : resources.filter(res => res.type === activeTab);
+  const filteredResources = activeTab === "All resources" 
+    ? resources 
+    : resources.filter(res => res.type === activeTab || (activeTab === "Documents" && res.type === "Document"));
 
   return (
-    <div className="min-h-screen bg-[#f4f7f6] flex">
-      <aside className="w-64 bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white min-h-screen hidden md:flex flex-col shadow-2xl z-10">
-        <div className="p-6 text-2xl font-bold border-b border-gray-700/50 flex items-center gap-2">
-          <div className="w-9 h-9 bg-gradient-to-tr from-[#0f766e] to-[#14b8a6] rounded-xl flex items-center justify-center text-white text-lg shadow-lg">h</div>
-          <span className="tracking-tight">hometuition<span className="text-[#14b8a6]">.lk</span></span>
+    <div className="h-screen bg-white flex font-sans overflow-hidden">
+      
+      {/* 1. Left Sidebar (Full Code Included) */}
+      <aside className="w-64 bg-[#0f172a] text-white hidden md:flex flex-col border-r border-gray-800 h-full shrink-0">
+        <div className="px-6 py-8 border-b border-gray-800">
+          <h1 className="text-xl font-bold text-white mb-1">Home Tuition</h1>
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Student Workspace</p>
         </div>
-        <nav className="flex-1 p-4 space-y-2 text-sm font-medium mt-4">
-          <Link href="/dashboard/student" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition"><span className="text-lg">📊</span> Dashboard</Link>
-          <Link href="/dashboard/student/courses" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition"><span className="text-lg">📚</span> My Courses</Link>
-          <Link href="/dashboard/student/lms" className="flex items-center gap-3 px-4 py-3 bg-[#0f766e] rounded-xl font-semibold shadow-lg text-white"><span className="text-lg">📂</span> LMS & Papers</Link>
-          <Link href="/dashboard/student/live-classes" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:bg-white/5 rounded-xl transition"><span className="text-lg">🎥</span> Live Classes</Link>
+        
+        <nav className="flex-1 py-6 px-4 space-y-1 overflow-y-auto">
+          <Link href="/dashboard/student" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Overview</Link>
+          <Link href="/dashboard/student/courses" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">My courses</Link>
+          <Link href="/dashboard/student/live-classes" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Live classes</Link>
+          <Link href="/dashboard/student/exams" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Exams</Link>
+          
+          {/* Active Menu (Teal) */}
+          <Link href="/dashboard/student/lms" className="block px-4 py-2.5 bg-[#0f766e] text-white text-sm font-bold rounded-sm">Resources</Link>
+          
+          <Link href="/dashboard/student/payments" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Payments</Link>
         </nav>
       </aside>
 
-      <main className="flex-1 p-6 md:p-10 overflow-y-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 gap-4">
-          <div>
-            <h1 className="text-2xl font-extrabold text-[#0f172a]">Learning Resources (LMS)</h1>
-            <p className="text-sm text-[var(--text-light)] mt-1">Download Notes, Past Papers, and Quizzes.</p>
+      {/* 2. Main Content Area */}
+      <main className="flex-1 flex flex-col h-full overflow-hidden">
+        
+        {/* Top Header */}
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
+          <div className="text-xs text-gray-500 font-bold uppercase">
+            <span className="text-black">STUDENT WORKSPACE</span> / RESOURCES
           </div>
-          <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-lg flex items-center gap-2">
-            <span className="text-xl">✅</span>
-            <div>
-              <p className="text-xs font-bold uppercase">Fee Status</p>
-              <p className="text-sm font-semibold">Paid & Unlocked</p>
+          <div className="flex gap-6 text-sm font-bold text-black">
+            <span className="cursor-pointer">EN ⌄</span>
+            <span className="cursor-pointer">Nethmi Perera ⌄</span>
+          </div>
+        </header>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-8 w-full">
+            
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-black mb-1">A second chance to understand.</h2>
+              <p className="text-sm text-gray-500">Nethmi's lesson notes & recordings • Available for 30 days after each class.</p>
             </div>
-          </div>
-        </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-4 mb-4">
-          {["All", "Notes", "Past Paper", "Model Paper", "Quiz", "Syllabus"].map((tab) => (
-            <button 
-              key={tab} 
-              onClick={() => setActiveTab(tab)}
-              className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition ${activeTab === tab ? "bg-[#0f172a] text-white shadow-md" : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"}`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b border-gray-100">
-                <th className="p-5 font-semibold">Resource Name</th>
-                <th className="p-5 font-semibold">Type</th>
-                <th className="p-5 font-semibold">Size</th>
-                <th className="p-5 font-semibold text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {filteredResources.map((item) => (
-                <tr key={item.id} className="hover:bg-gray-50 transition">
-                  <td className="p-5 flex items-center gap-3">
-                    <span className="text-2xl">{item.icon}</span>
-                    <div>
-                      <span className="font-bold text-[#0f172a] block">{item.title}</span>
-                      <span className="text-xs text-gray-400">{item.subject}</span>
-                    </div>
-                  </td>
-                  <td className="p-5"><span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-xs font-bold">{item.type}</span></td>
-                  <td className="p-5 text-sm font-medium text-gray-500">{item.size}</td>
-                  <td className="p-5 text-right">
-                    <button className="btn-teal text-xs py-2 px-5 shadow-sm hover:shadow-md transition">
-                      {item.type === "Quiz" ? "Start Quiz" : "Download"}
-                    </button>
-                  </td>
-                </tr>
+            <div className="flex gap-6 border-b border-gray-200 mb-6">
+              {["All resources", "Documents", "Recordings", "Quizzes"].map((tab) => (
+                <button 
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`pb-3 text-sm font-bold transition ${
+                    activeTab === tab 
+                      ? "text-[#0f766e] border-b-2 border-[#0f766e]" 
+                      : "text-gray-500 hover:text-black font-medium"
+                  }`}
+                >
+                  {tab}
+                </button>
               ))}
-            </tbody>
-          </table>
+            </div>
+
+            <div className="bg-[#fff8f1] border border-[#d97706]/30 p-4 rounded-sm mb-6">
+              <p className="font-bold text-black mb-1">Revisit a lesson together.</p>
+              <p className="text-xs text-gray-600">Recordings support revision at your own pace. Downloadable class notes are linked with each lesson.</p>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-sm shadow-sm overflow-hidden mb-8">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-[#f8fafc] text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                    <th className="p-4 font-bold">Resource / Lesson</th>
+                    <th className="p-4 font-bold">Format</th>
+                    <th className="p-4 font-bold">Added / Recorded</th>
+                    <th className="p-4 font-bold text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {filteredResources.map((res) => (
+                    <tr key={res.id} className="hover:bg-gray-50 transition">
+                      <td className="p-4 font-bold text-black">{res.title}</td>
+                      <td className="p-4 text-sm text-gray-600">{res.format}</td>
+                      <td className="p-4 text-sm text-gray-600">{res.date}</td>
+                      <td className="p-4 text-right">
+                        <button className={`text-sm font-bold hover:underline ${
+                          res.type === "Quiz" ? "text-[#d97706]" : "text-[#0f766e]"
+                        }`}>
+                          {res.action}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <p className="text-xs text-gray-500">All resources are visible only to students enrolled in Grade 11 Mathematics.</p>
+
+          </div>
         </div>
       </main>
     </div>
