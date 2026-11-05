@@ -10,14 +10,22 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "full_name")
     private String fullName;
     
-    @Column(unique = true)
+    @Column(name = "email", unique = true)
     private String email;
     
+    @Column(name = "password")
     private String password;
+    
+    @Column(name = "role")
     private String role; // STUDENT, PARENT, TEACHER, ADMIN
+    
+    @Column(name = "nic")
     private String nic;
+    
+    @Column(name = "whatsapp")
     private String whatsapp;
 
     // Getters and Setters
