@@ -16,7 +16,8 @@ export default function Login() {
     setLoading(true);
     
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/register`, {
+      // 🚀 FIXED: Changed URL from /register to /login
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -25,34 +26,36 @@ export default function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        // யூசர் செலக்ட் பண்ண ரோல், Backend-லேர்ந்து வந்த ரோல்-ஓட மேட்ச் ஆகுதான்னு செக் பண்றோம்
+        // Check if the selected role matches the database role
         if (role !== data.role) {
           alert(`Access Denied! You are registered as a ${data.role}, but you selected ${role}.`);
           setLoading(false);
           return; 
         }
 
-                // Local Storage-ல சேவ் பண்றோம்
-        localStorage.setItem("userEmail", email); // 🚀 ஈமெயிலை சேவ் பண்றோம்
+        // Save user details to Local Storage
+        localStorage.setItem("userEmail", email); 
         localStorage.setItem("userRole", data.role);
         localStorage.setItem("userName", data.name);
         localStorage.setItem("isLoggedIn", "true");
 
-        // 🚀 Cookie-லயும் சேவ் பண்றோம் (Middleware-க்காக)
-        document.cookie = `userRole=${data.role}; path=/; max-age=86400`; // 1 நாள் வரைக்கும் இருக்கும்
+        // Save user role to Cookie for Middleware
+        document.cookie = `userRole=${data.role}; path=/; max-age=86400`; 
 
         alert(`Welcome back, ${data.name}!`);
         
-        // சரியான ரோல்-னா அந்த டாஷ்போர்டுக்கு போகும்
+        // Redirect to the correct dashboard based on role
         if (data.role === "STUDENT") router.push("/dashboard/student");
         else if (data.role === "TEACHER") router.push("/dashboard/teacher");
         else if (data.role === "PARENT") router.push("/dashboard/parent");
         else if (data.role === "ADMIN") router.push("/dashboard/admin");
         
       } else {
+        // Handle login failure (e.g., wrong password)
         alert("Login Failed: " + data);
       }
     } catch (err) {
+      // Handle server connection errors
       alert("Failed to connect to the server.");
     } finally {
       setLoading(false);
