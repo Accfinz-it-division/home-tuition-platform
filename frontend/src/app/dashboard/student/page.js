@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-// 🚀 லைன் சார்ட்-க்கான டேட்டா (பின்னாடி Database-லேர்ந்து எடுக்கலாம்)
+// 🚀 Graph Data (Can be fetched from DB later)
 const progressData = [
   { month: "Jul", progress: 65 },
   { month: "Aug", progress: 72 },
@@ -23,7 +23,11 @@ export default function StudentDashboard() {
     attendance: "0%",
     averageMark: "0%",
     nextClassDate: "-",
-    nextClassName: "-"
+    nextClassName: "-",
+    continueTopic: "-",
+    teacherName: "-",
+    attention1: "-",
+    attention2: "-"
   });
 
   useEffect(() => {
@@ -42,7 +46,7 @@ export default function StudentDashboard() {
 
     const fetchDashboardData = async () => {
       try {
-       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/student/dashboard?email=${storedEmail}`);
         if (response.ok) {
           const data = await response.json();
           setDashboardData(data);
@@ -130,23 +134,26 @@ export default function StudentDashboard() {
 
             {/* Middle Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              
+              {/* Keep Your Momentum Card */}
               <div className="lg:col-span-2 bg-[#0f172a] text-white p-6 rounded-sm shadow-sm flex flex-col justify-between">
                 <div>
                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">KEEP YOUR MOMENTUM</p>
-                  <h3 className="text-2xl font-bold mb-2">Quadratic equations</h3>
-                  <p className="text-sm text-gray-300">Grade 11 Mathematics • 24 Oct • 4:00-6:00 PM • Kamal Fernando</p>
+                  <h3 className="text-2xl font-bold mb-2">{dashboardData.continueTopic}</h3>
+                  <p className="text-sm text-gray-300">Grade 11 {dashboardData.nextClassName} • 24 Oct • 4:00-6:00 PM • {dashboardData.teacherName}</p>
                 </div>
                 <Link href="/dashboard/student/live-classes" className="inline-block mt-6 text-sm font-bold text-white hover:text-[#0f766e] transition w-fit">
                   Continue learning →
                 </Link>
               </div>
 
+              {/* Attention Card */}
               <div className="bg-white border border-gray-200 p-6 rounded-sm shadow-sm">
                 <h3 className="text-lg font-bold text-black mb-4">Your attention, please</h3>
                 <ul className="space-y-3 text-sm text-gray-600">
                   <li className="flex justify-between pb-2 border-b border-gray-100"><span>October payment received ✓</span></li>
-                  <li className="flex justify-between pb-2 border-b border-gray-100"><span>Algebra quiz available</span></li>
-                  <li className="flex justify-between"><span className="text-[#d97706] font-bold">New lesson notes uploaded</span></li>
+                  <li className="flex justify-between pb-2 border-b border-gray-100"><span>{dashboardData.attention1}</span></li>
+                  <li className="flex justify-between"><span className="text-[#d97706] font-bold">{dashboardData.attention2}</span></li>
                 </ul>
               </div>
             </div>
@@ -154,7 +161,7 @@ export default function StudentDashboard() {
             {/* Bottom Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
               
-              {/* 🚀 Recharts Line Chart */}
+              {/* Line Chart */}
               <div className="bg-white border border-gray-200 p-6 rounded-sm shadow-sm">
                 <h3 className="text-lg font-bold text-black mb-1">Learning progress</h3>
                 <p className="text-xs text-gray-500 mb-4">Grade 11 Mathematics • steady progress</p>

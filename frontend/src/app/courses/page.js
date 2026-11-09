@@ -1,47 +1,34 @@
-import Link from "next/link";
+"use client";
 
-// 🚀 DEMO DATA: Courses List
-const coursesList = [
-  { 
-    id: 1, 
-    title: "A formula for success.", 
-    subject: "Grade 11 Mathematics", 
-    teacher: "Kamal Fernando", 
-    rating: "4.9", 
-    reviews: 128, 
-    badge: "O/L • Sinhala medium",
-    price: "LKR 3,500",
-    color: "bg-[#0f172a]" // Navy
-  },
-  { 
-    id: 2, 
-    title: "Explore. Discover.", 
-    subject: "Grade 11 Science", 
-    teacher: "Ishara Senanayake", 
-    rating: "4.9", 
-    reviews: 128, 
-    badge: "O/L • Sinhala medium",
-    price: "LKR 3,000",
-    color: "bg-[#0f172a]"
-  },
-  { 
-    id: 3, 
-    title: "Words open worlds.", 
-    subject: "Grade 11 English", 
-    teacher: "Anushka Silva", 
-    rating: "4.9", 
-    reviews: 128, 
-    badge: "O/L • English medium",
-    price: "LKR 2,500",
-    color: "bg-[#0f172a]"
-  }
-];
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function CoursesPage() {
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/courses`);
+        if (response.ok) {
+          const data = await response.json();
+          setCourses(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch courses", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#fcfcfc] flex flex-col font-sans">
       
-      {/* 1. Minimal Navbar (Same as Home) */}
+      {/* Navbar */}
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
         <Link href="/" className="text-2xl font-serif font-bold text-[#0f172a]">
           Home Tuition
@@ -65,101 +52,108 @@ export default function CoursesPage() {
         </div>
       </nav>
 
-      {/* 2. Main Content */}
+      {/* Main Content */}
       <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-10">
         
-        {/* Breadcrumb & Title */}
         <div className="mb-8">
-          <p className="text-xs text-gray-500 mb-3">Home / Find your next chapter.</p>
-          <h1 className="text-4xl font-serif text-[#0f172a] mb-2">Find your next chapter.</h1>
-          <p className="text-sm text-gray-500">Thoughtfully taught classes for every stage of your education.</p>
+          <p className="text-xs text-gray-500 mb-3">Home / Explore Skills</p>
+          <h1 className="text-4xl font-serif text-[#0f172a] mb-2">Upgrade your skills.</h1>
+          <p className="text-sm text-gray-500">Learn languages, IT, design, and more from expert instructors.</p>
         </div>
 
         {/* Filter Bar */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div>
             <label className="block text-xs font-bold text-[#0f172a] mb-2">Search courses</label>
-            <input type="text" placeholder="Mathematics, science, English..." className="w-full border border-gray-300 rounded-sm py-2 px-3 text-sm outline-none focus:border-[#0f766e]" />
+            <input type="text" placeholder="English, Web Dev, Design..." className="w-full border border-gray-300 rounded-sm py-2 px-3 text-sm outline-none focus:border-[#0f766e]" />
           </div>
           <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-2">Grade</label>
+            <label className="block text-xs font-bold text-[#0f172a] mb-2">Course Type</label>
             <select className="w-full border border-gray-300 rounded-sm py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white">
-              <option>Grade 11</option>
-              <option>Grade 10</option>
-              <option>Grade 13</option>
+              <option>All Types</option>
+              <option>O/L & A/L</option>
+              <option>Government Exams</option>
+              <option>Languages</option>
+              <option>IT & Software</option>
+              <option>Design</option>
+              <option>Business</option>
+              <option>Music</option>
+              <option>Photography</option>
+              <option>Personal Development</option>
+              <option>Skill Courses</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-[#0f172a] mb-2">Level</label>
+            <select className="w-full border border-gray-300 rounded-sm py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white">
+              <option>All Levels</option>
+              <option>Beginner</option>
+              <option>Intermediate</option>
+              <option>Advanced</option>
             </select>
           </div>
           <div>
             <label className="block text-xs font-bold text-[#0f172a] mb-2">Medium</label>
             <select className="w-full border border-gray-300 rounded-sm py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white">
-              <option>All languages</option>
+              <option>English</option>
               <option>Sinhala</option>
-              <option>English</option>
               <option>Tamil</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-2">Subject</label>
-            <select className="w-full border border-gray-300 rounded-sm py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white">
-              <option>All subjects</option>
-              <option>Mathematics</option>
-              <option>Science</option>
-              <option>English</option>
             </select>
           </div>
         </div>
 
         {/* Results Count */}
         <div className="flex justify-between items-center mb-6">
-          <p className="text-xs text-gray-500">6 courses for Grade 11</p>
+          <p className="text-xs text-gray-500">{courses.length} courses available</p>
           <p className="text-xs text-gray-500">Sort: <span className="font-bold text-[#0f172a]">Recommended ⌄</span></p>
         </div>
 
         {/* Course Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          {coursesList.map((course) => (
-            <div key={course.id} className="bg-white border border-gray-200 rounded-sm shadow-sm flex flex-col hover:shadow-md transition">
-              
-              {/* Card Header */}
-              <div className={`${course.color} text-white p-6 rounded-t-sm`}>
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2">HOME TUITION / 2026</p>
-                <h3 className="text-xl font-serif">{course.title}</h3>
-              </div>
-
-              {/* Card Body */}
-              <div className="p-6 flex-grow flex flex-col justify-between">
-                <div>
-                  <span className="bg-[#f5f2eb] text-[#b45309] text-[10px] font-bold px-2 py-1 rounded-sm mb-4 inline-block tracking-wide">
-                    {course.badge}
-                  </span>
-                  <h4 className="font-bold text-lg text-[#0f172a] mb-1">{course.subject}</h4>
-                  <p className="text-xs text-gray-500 mb-4">{course.teacher} • <span className="text-[#0f766e]">★ {course.rating}</span> ({course.reviews})</p>
-                </div>
+        {loading ? (
+          <div className="text-center text-gray-500 py-10">Loading courses...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            {courses.map((course) => (
+              <div key={course.id} className="bg-white border border-gray-200 rounded-sm shadow-sm flex flex-col hover:shadow-md transition">
                 
-                {/* Card Footer */}
-                <div className="flex justify-between items-center mt-6 border-t border-gray-100 pt-4">
-                  <p className="text-sm font-bold text-[#0f172a]">{course.price} <span className="text-[10px] text-gray-400 font-normal">/ month</span></p>
-                  <button className="text-xs font-bold text-[#b45309] hover:underline">View course →</button>
+                <div className="bg-[#0f172a] text-white p-6 rounded-t-sm">
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2">HOME TUITION / 2026</p>
+                  <h3 className="text-xl font-serif">{course.title}</h3>
+                </div>
+
+                <div className="p-6 flex-grow flex flex-col justify-between">
+                  <div>
+                    <span className="bg-[#f5f2eb] text-[#b45309] text-[10px] font-bold px-2 py-1 rounded-sm mb-4 inline-block tracking-wide">
+                      {course.badge}
+                    </span>
+                    <h4 className="font-bold text-lg text-[#0f172a] mb-1">{course.subject}</h4>
+                    <p className="text-xs text-gray-500 mb-4">{course.teacherName} • <span className="text-[#0f766e]">★ 4.9</span> (128)</p>
+                  </div>
+                  
+                  <div className="flex justify-between items-center mt-6 border-t border-gray-100 pt-4">
+                    <p className="text-sm font-bold text-[#0f172a]">{course.price}</p>
+                    <Link href="/login" className="text-xs font-bold text-[#b45309] hover:underline">View course →</Link>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
-        {/* Bottom CTA Banner */}
+        {/* Bottom CTA */}
         <div className="bg-[#f5f2eb] border border-[#e8e4d9] p-8 rounded-sm flex flex-col md:flex-row justify-between items-center gap-4">
           <div>
-            <h3 className="text-xl font-serif text-[#0f172a] mb-1">Not sure where to begin?</h3>
-            <p className="text-sm text-gray-600">Meet your teacher in a free 30-minute trial before you enrol.</p>
+            <h3 className="text-xl font-serif text-[#0f172a] mb-1">Ready to learn something new?</h3>
+            <p className="text-sm text-gray-600">Join our skill-based courses and boost your career.</p>
           </div>
-          <Link href="/teacher" className="text-sm font-bold text-[#b45309] whitespace-nowrap hover:underline">
-            Find a teacher →
+          <Link href="/register" className="text-sm font-bold text-[#b45309] whitespace-nowrap hover:underline">
+            Get started →
           </Link>
         </div>
 
       </main>
 
-      {/* 3. Footer */}
+      {/* Footer */}
       <footer className="border-t border-gray-200 py-6 px-6 bg-white mt-auto">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-gray-400">© 2026 Home Tuition • Sri Lanka</p>

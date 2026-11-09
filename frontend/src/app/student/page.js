@@ -4,7 +4,7 @@ export default function StudentMainPage() {
   return (
     <div className="min-h-screen bg-[#fcfcfc] flex flex-col font-sans">
       
-      {/* 1. Minimal Navbar (Same as Home) */}
+      {/* 1. Navbar */}
       <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
         <Link href="/" className="text-2xl font-serif font-bold text-[#0f172a]">
           Home Tuition

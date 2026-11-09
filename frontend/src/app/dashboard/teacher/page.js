@@ -1,204 +1,164 @@
+"use client";
+
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
-export default function TeacherDashboard() {
+export default function TeachersPage() {
+  const [teachers, setTeachers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("All");
+
+  // 🚀 Categories for Tabs
+  const categories = ["All", "Primary", "Secondary", "O/L", "A/L", "Languages", "Skills"];
+
+  useEffect(() => {
+    const fetchTeachers = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/teachers/approved`);
+        if (response.ok) {
+          const data = await response.json();
+          setTeachers(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch teachers", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeachers();
+  }, []);
+
+  // 🚀 Filter logic based on selected tab
+  const filteredTeachers = teachers.filter((teacher) => {
+    if (activeTab === "All") return true;
+    // Assuming teacher.subject holds the category (e.g., "Primary", "Mathematics")
+    // For now, we will just do a basic check if it matches.
+    return teacher.subject?.toLowerCase().includes(activeTab.toLowerCase());
+  });
+
+  const getInitials = (name) => {
+    if (!name) return "T";
+    return name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+  };
+
   return (
-    <div className="h-screen bg-white flex font-sans overflow-hidden">
+    <div className="min-h-screen bg-[#fcfcfc] flex flex-col font-sans">
       
-      {/* 1. Left Sidebar (Navy) */}
-      <aside className="w-64 bg-[#0f172a] text-white hidden md:flex flex-col border-r border-gray-800 h-full shrink-0">
+      {/* Navbar */}
+      <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <Link href="/" className="text-2xl font-serif font-bold text-[#0f172a]">
+          Home Tuition
+        </Link>
         
-        {/* Logo Area */}
-        <div className="px-6 py-8 border-b border-gray-800">
-          <h1 className="text-xl font-bold text-white tracking-wide mb-1">Home Tuition</h1>
-          <p className="text-[10px] text-gray-400 font-bold tracking-widest uppercase">Teacher Workspace</p>
+        <div className="hidden md:flex gap-6 font-medium text-sm text-gray-600">
+          <Link href="/" className="hover:text-[#0f172a] transition">Home</Link>
+          <Link href="/about" className="hover:text-[#0f172a] transition">About</Link>
+          <Link href="/courses" className="hover:text-[#0f172a] transition">Courses</Link>
+          <Link href="/student" className="hover:text-[#0f172a] transition">Students</Link>
+          <Link href="/teacher" className="text-[#0f172a] font-bold">Teachers</Link>
+          <Link href="/faq" className="hover:text-[#0f172a] transition">FAQ</Link>
+          <Link href="/contact" className="hover:text-[#0f172a] transition">Contact</Link>
         </div>
-        
-        {/* Navigation */}
-        <nav className="flex-1 py-6 px-4 space-y-1 overflow-y-auto">
-          {/* Active Menu (Changed to Teal) */}
-          <Link href="/dashboard/teacher" className="block px-4 py-2.5 bg-[#0f766e] text-white text-sm font-bold rounded-sm">
-            Overview
-          </Link>
-          <Link href="#" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">
-            Classes
-          </Link>
-          <Link href="#" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">
-            Attendance
-          </Link>
-          <Link href="#" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">
-            Resources
-          </Link>
-          <Link href="#" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">
-            Exams
-          </Link>
-          <Link href="#" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">
-            Earnings
-          </Link>
-        </nav>
 
-        {/* Bottom Links */}
-        <div className="p-4 space-y-1 border-t border-gray-800 shrink-0">
-          <Link href="#" className="block px-4 py-2 text-gray-400 text-sm hover:text-white transition">Help centre ↗</Link>
-          <Link href="#" className="block px-4 py-2 text-gray-400 text-sm hover:text-white transition">Settings</Link>
-          <Link href="/" className="block px-4 py-2 text-gray-400 text-sm hover:text-white transition">Sign out</Link>
+        <div className="flex gap-4 items-center">
+          <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#0f172a]">Log in</Link>
+          <Link href="/register" className="bg-[#0f766e] text-white text-sm font-medium py-2 px-6 rounded-sm hover:bg-[#0d5f58] transition shadow-sm">
+            Get started
+          </Link>
         </div>
-      </aside>
+      </nav>
 
-      {/* 2. Main Content Area */}
-      <main className="flex-1 flex flex-col h-full overflow-hidden">
+      {/* Main Content */}
+      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-10">
         
-        {/* Top Navbar (White) */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
-          <div className="flex items-center gap-2 text-xs text-gray-500 font-bold">
-            <span>06 · TEACHER: CLASSES, ATTENDANCE & RESOURCES</span>
-            <span>/</span>
-            <span className="text-black">HOME TUITION</span>
+        <div className="mb-6">
+          <p className="text-xs text-gray-500 mb-3">Home / Great teachers. Lasting confidence.</p>
+          <h1 className="text-4xl font-serif text-[#0f172a] mb-2">Great teachers. Lasting confidence.</h1>
+          <p className="text-sm text-gray-500">Meet verified Sri Lankan educators who care about your progress.</p>
+        </div>
+
+        {/* 🚀 Category Tabs */}
+        <div className="flex gap-4 border-b border-gray-200 mb-8 overflow-x-auto pb-2">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveTab(cat)}
+              className={`pb-2 text-sm font-bold transition whitespace-nowrap ${
+                activeTab === cat 
+                  ? "text-[#0f766e] border-b-2 border-[#0f766e]" 
+                  : "text-gray-500 hover:text-[#0f172a]"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Results Count */}
+        <p className="text-xs text-gray-500 mb-6">{filteredTeachers.length} verified teachers <span className="mx-2">•</span> Recommended for you</p>
+
+        {/* Teachers Grid */}
+        {loading ? (
+          <div className="text-center text-gray-500 py-10">Loading teachers...</div>
+        ) : filteredTeachers.length === 0 ? (
+          <div className="text-center text-gray-500 py-10 border border-dashed border-gray-300 rounded-sm">
+            No verified teachers available in this category.
           </div>
-          
-          <div className="flex items-center gap-6">
-            {/* Search Box */}
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Search resources, students..." 
-                className="bg-white border border-gray-300 focus:border-[#0f766e] outline-none rounded-sm py-1.5 px-3 pl-8 text-sm w-64 transition-all text-black" 
-              />
-              <span className="absolute left-2.5 top-1.5 text-gray-400 text-sm">🔍</span>
-            </div>
-
-            <span className="text-sm font-bold text-black cursor-pointer">EN ⌄</span>
-            <span className="text-sm font-bold text-black cursor-pointer">Kamal Fernando ⌄</span>
-          </div>
-        </header>
-
-        {/* 3. Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto">
-          
-          <div className="p-8 w-full">
-            
-            {/* Greeting */}
-            <div className="mb-8">
-              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-2">Teacher workspace / Welcome back, Kamal.</p>
-              <h2 className="text-3xl font-bold text-black mb-1">Welcome back, Kamal.</h2>
-              <p className="text-sm text-gray-500">Your teaching day, thoughtfully organised. • October 2026</p>
-            </div>
-
-            {/* Top Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
-                <p className="text-xs text-gray-500 mb-2 font-medium">Active classes</p>
-                <h3 className="text-3xl font-bold text-black">4</h3>
-                <p className="text-xs text-gray-400 mt-2">98 enrolled students</p>
-              </div>
-              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
-                <p className="text-xs text-gray-500 mb-2 font-medium">Attendance</p>
-                <h3 className="text-3xl font-bold text-black">92%</h3>
-                <p className="text-xs text-gray-400 mt-2">This month</p>
-              </div>
-              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
-                <p className="text-xs text-gray-500 mb-2 font-medium">To grade</p>
-                <h3 className="text-3xl font-bold text-black">18</h3>
-                <p className="text-xs text-gray-400 mt-2">October assessment</p>
-              </div>
-              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
-                <p className="text-xs text-gray-500 mb-2 font-medium">Earnings</p>
-                <h3 className="text-3xl font-bold text-black">LKR 84,000</h3>
-                <p className="text-xs text-gray-400 mt-2">October 2026</p>
-              </div>
-            </div>
-
-            {/* Middle Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-              
-              {/* Next Lesson (Navy Box) */}
-              <div className="lg:col-span-2 bg-[#0f172a] text-white p-6 rounded-sm shadow-sm flex flex-col justify-between">
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+            {filteredTeachers.map((teacher) => (
+              <div key={teacher.id} className="bg-white border border-gray-200 rounded-sm p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                
                 <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">YOUR NEXT LIVE LESSON</p>
-                  <h3 className="text-2xl font-bold mb-2">Quadratic equations</h3>
-                  <p className="text-sm text-gray-300">Grade 11 Mathematics • 24 Oct • 4:00-6:00 PM • Kamal Fernando</p>
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className="w-16 h-16 bg-[#f0efeb] text-[#0f172a] flex items-center justify-center text-xl font-bold rounded-sm border border-gray-200">
+                      {getInitials(teacher.fullName)}
+                    </div>
+                    <span className="bg-[#e6f4f1] text-[#0f766e] text-[10px] font-bold px-2 py-1 rounded-sm border border-[#0f766e]/20 flex items-center gap-1">
+                      ✓ Verified
+                    </span>
+                  </div>
+
+                  <h3 className="text-2xl font-serif text-[#0f172a] mb-1">{teacher.fullName}</h3>
+                  <p className="text-sm font-bold text-[#0f766e] mb-4">{teacher.subject || "Expert Teacher"}</p>
+
+                  <ul className="text-xs text-gray-500 space-y-1 mb-6">
+                    <li>8+ years of teaching experience</li>
+                    <li>National syllabus • Online lessons</li>
+                  </ul>
+
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#0f172a] mb-6">
+                    <span className="text-[#d97706]">★ 4.9</span>
+                    <span className="text-gray-400">•</span>
+                    <span>128 student reviews</span>
+                  </div>
                 </div>
-                {/* Changed hover color to Teal */}
-                <Link href="#" className="inline-block mt-6 text-sm font-bold text-white hover:text-[#0f766e] transition w-fit">
-                  Open class details →
+
+                {/* 🚀 Link to dynamic profile page */}
+                <Link 
+                  href={`/teacher/${teacher.id}`} 
+                  className="w-full text-center border border-gray-300 text-[#0f172a] py-2 text-sm font-bold rounded-sm hover:bg-gray-50 transition block"
+                >
+                  View profile →
                 </Link>
               </div>
+            ))}
+          </div>
+        )}
 
-              {/* Attention (White Box) */}
-              <div className="bg-white border border-gray-200 p-6 rounded-sm shadow-sm">
-                <h3 className="text-lg font-bold text-black mb-4">Your attention, please</h3>
-                <ul className="space-y-3 text-sm text-gray-600">
-                  <li className="flex justify-between pb-2 border-b border-gray-200">
-                    <span>18 exam submissions to grade</span>
-                  </li>
-                  <li className="flex justify-between pb-2 border-b border-gray-200">
-                    <span>Upload this week's lesson notes</span>
-                  </li>
-                  <li className="flex justify-between pt-1">
-                    {/* Changed highlight to Teal */}
-                    <span className="text-[#0f766e] font-bold">Attendance last saved 17 Oct</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
+      </main>
 
-            {/* Bottom Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-10">
-              
-              {/* Performance Chart */}
-              <div className="bg-white border border-gray-200 p-6 rounded-sm shadow-sm">
-                <h3 className="text-lg font-bold text-black mb-1">Class performance</h3>
-                <p className="text-xs text-gray-500 mb-6">Grade 11 Mathematics • steady progress</p>
-                
-                <div className="flex items-end justify-between h-40 gap-4 px-4 pb-2 border-b border-gray-200">
-                  <div className="flex flex-col items-center gap-2 group w-full">
-                    <span className="text-xs font-bold text-gray-500">65%</span>
-                    <div className="w-full max-w-[50px] bg-[#0f172a] h-[65%] transition-all group-hover:bg-[#0f766e]"></div>
-                    <span className="text-xs text-gray-500">Jul</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-2 group w-full">
-                    <span className="text-xs font-bold text-gray-500">72%</span>
-                    <div className="w-full max-w-[50px] bg-[#0f172a] h-[72%] transition-all group-hover:bg-[#0f766e]"></div>
-                    <span className="text-xs text-gray-500">Aug</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-2 group w-full">
-                    <span className="text-xs font-bold text-gray-500">78%</span>
-                    <div className="w-full max-w-[50px] bg-[#0f172a] h-[78%] transition-all group-hover:bg-[#0f766e]"></div>
-                    <span className="text-xs text-gray-500">Sep</span>
-                  </div>
-                  
-                  {/* Current Month Bar (Changed to Teal) */}
-                  <div className="flex flex-col items-center gap-2 group w-full">
-                    <span className="text-xs font-bold text-[#0f766e]">85%</span>
-                    <div className="w-full max-w-[50px] bg-[#0f766e] h-[85%]"></div>
-                    <span className="text-xs text-gray-500">Oct</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Coming Up Next */}
-              <div className="bg-white border border-gray-200 p-6 rounded-sm shadow-sm">
-                <h3 className="text-lg font-bold text-black mb-4">Coming up next</h3>
-                <div className="space-y-4 text-sm text-gray-600">
-                  <div className="flex justify-between border-b border-gray-200 pb-2">
-                    <span className="font-bold text-black">24 Oct</span>
-                    <span>Mathematics live class</span>
-                  </div>
-                  <div className="flex justify-between border-b border-gray-200 pb-2">
-                    <span className="font-bold text-black">26 Oct</span>
-                    <span>Algebra assessment due</span>
-                  </div>
-                  <div className="flex justify-between border-b border-gray-200 pb-2">
-                    <span className="font-bold text-black">31 Oct</span>
-                    <span>Graphs & functions</span>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
+      {/* Footer */}
+      <footer className="border-t border-gray-200 py-6 px-6 bg-white mt-auto">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-gray-400">© 2026 Home Tuition • Sri Lanka</p>
+          <div className="flex gap-4 text-xs text-gray-400">
+            <span>English / Sinhala / Tamil</span>
+            <span>All times in Sri Lanka (GMT+5:30)</span>
           </div>
         </div>
-      </main>
+      </footer>
     </div>
   );
 }
