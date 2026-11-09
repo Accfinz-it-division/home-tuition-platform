@@ -1,23 +1,31 @@
 package lk.hometuition.backend.controller;
 
-import lk.hometuition.backend.dto.DashboardResponse;
+import lk.hometuition.backend.entity.ClassSchedule;
 import lk.hometuition.backend.entity.User;
+import lk.hometuition.backend.repository.ClassScheduleRepository;
 import lk.hometuition.backend.repository.CourseRepository;
 import lk.hometuition.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/student")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class StudentController {
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private CourseRepository courseRepository; // 🚀 இது தான் கோர்ஸ் கவுண்ட் எடுக்க உதவும்
+    private CourseRepository courseRepository;
+
+    // 🚀 Inject the new repository
+    @Autowired
+    private ClassScheduleRepository classRepository; 
 
     @GetMapping("/dashboard")
     public ResponseEntity<?> getStudentDashboard(@RequestParam String email) {
@@ -28,16 +36,24 @@ public class StudentController {
             return ResponseEntity.badRequest().body("Error: Student not found!");
         }
 
-        // 🚀 இப்போ நாம ஹார்ட்-கோட் 3 னு போடாம, Database-ல எத்தனை கோர்ஸ் இருக்குன்னு எண்ணி எடுக்கிறோம்
         int activeCoursesCount = (int) courseRepository.count();
 
-        DashboardResponse response = new DashboardResponse(
-            user.getFullName(),
-            activeCoursesCount, // இது இப்போ டைனமிக்
-            "92%", 
-            "85%", 
-            "24 Oct", 
-            "Mathematics" 
+        // 🚀 Fetch real class data from Database
+        List<ClassSchedule> upcomingClasses = classRepository.findAll();
+        ClassSchedule nextClass = upcomingClasses.isEmpty() ? null : upcomingClasses.get(0);
+
+        // 🚀 Build the response dynamically
+        Map<String, Object> response = Map.of(
+            "studentName", user.getFullName(),
+            "activeCourses", activeCoursesCount,
+            "attendance", "92%",
+            "averageMark", "85%",
+            "nextClassName", nextClass != null ? nextClass.getSubject() : "-",
+            "nextClassDate", nextClass != null ? nextClass.getDate() : "-",
+            "continueTopic", nextClass != null ? nextClass.getTopic() : "-",
+            "teacherName", nextClass != null ? nextClass.getTeacherName() : "-",
+            "attention1", "Algebra quiz available",
+            "attention2", "New lesson notes uploaded"
         );
 
         return ResponseEntity.ok(response);

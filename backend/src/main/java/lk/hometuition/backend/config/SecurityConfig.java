@@ -26,28 +26,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // CSRF (Cross-Site Request Forgery) ப்ரொடெக்ஷனை டிஸேபிள் பண்றோம் (API-க்கு இது தேவை இல்லை)
+            // Disable CSRF (Not needed for REST APIs)
             .csrf(AbstractHttpConfigurer::disable)
             
-            // CORS (Cross-Origin Resource Sharing) செட் பண்றோம் (Next.js Frontend-ஐ அனுமதிக்க)
+            // Enable CORS
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             
-            // அனுமதி (Authorization) விதிகள்
-                        .authorizeHttpRequests(auth -> auth
-                // 🚀 CORS மற்றும் எல்லா API-க்கும் அனுமதி கொடுக்கிறோம் (Development-க்கு மட்டும்)
+            // Allow all API requests
+            .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/**").permitAll()
                 .anyRequest().authenticated()
             );
+
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        
+        // 🚀 ALLOW BOTH LOCALHOST AND VERCEL FRONTEND
         configuration.setAllowedOrigins(List.of(
-    "http://localhost:3000", 
-    "https://home-tuition-platform-one.vercel.app"
-)); configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+            "http://localhost:3000", 
+            "https://home-tuition-platform-one.vercel.app"
+        )); 
+        
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
         

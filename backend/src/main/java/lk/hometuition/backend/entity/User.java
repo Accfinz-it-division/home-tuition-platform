@@ -28,6 +28,10 @@ public class User {
     @Column(name = "whatsapp")
     private String whatsapp;
 
+    // 🚀 THIS IS THE NEW FIELD
+    @Column(name = "verification_status")
+    private String verificationStatus = "PENDING"; 
+
     // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -49,4 +53,11 @@ public class User {
 
     public String getWhatsapp() { return whatsapp; }
     public void setWhatsapp(String whatsapp) { this.whatsapp = whatsapp; }
+
+    @Column(name = "subject")
+    private String subject; // e.g., "Primary", "Mathematics", "English"
+
+    // 🚀 NEW GETTERS & SETTERS
+    public String getVerificationStatus() { return verificationStatus; }
+    public void setVerificationStatus(String verificationStatus) { this.verificationStatus = verificationStatus; }
 }
