@@ -1,6 +1,8 @@
 package lk.hometuition.backend.controller;
 
+import lk.hometuition.backend.entity.TeacherProfile;
 import lk.hometuition.backend.entity.User;
+import lk.hometuition.backend.repository.TeacherProfileRepository;
 import lk.hometuition.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,10 @@ public class AdminController {
 
     @Autowired
     private UserRepository userRepository;
+
+    // 🚀 Added this missing repository injection
+    @Autowired
+    private TeacherProfileRepository teacherProfileRepository;
 
     // 1. Get Pending Teachers
     @GetMapping("/teachers/pending")
@@ -56,13 +62,24 @@ public class AdminController {
             "approvedTeachers", approvedTeachers
         ));
     }
-        // 🚀 Get a single approved teacher by ID (For Profile Page)
-    @GetMapping("/teachers/{id}")
-    public ResponseEntity<?> getTeacherById(@PathVariable Long id) {
+
+    // 5. Update Teacher Profile
+    @PutMapping("/teachers/{id}/profile")
+    public ResponseEntity<?> updateTeacherProfile(@PathVariable Long id, @RequestBody TeacherProfile profileData) {
         User teacher = userRepository.findById(id).orElse(null);
         if (teacher == null || !teacher.getRole().equals("TEACHER")) {
             return ResponseEntity.badRequest().body("Teacher not found");
         }
-        return ResponseEntity.ok(teacher);
+
+        TeacherProfile profile = teacherProfileRepository.findByUserId(id).orElse(new TeacherProfile());
+        profile.setUserId(id);
+        profile.setSubject(profileData.getSubject());
+        profile.setBio(profileData.getBio());
+        profile.setQualification(profileData.getQualification());
+        profile.setExperience(profileData.getExperience());
+        profile.setAvailability(profileData.getAvailability());
+        
+        teacherProfileRepository.save(profile);
+        return ResponseEntity.ok(Map.of("message", "Profile updated successfully!"));
     }
 }
