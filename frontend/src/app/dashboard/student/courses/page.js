@@ -26,10 +26,10 @@ export default function MyCourses() {
     fetchCourses();
   }, []);
 
-  // டேப்-க்கு ஏத்த மாதிரி டேட்டாவை ஃபில்டர் பண்றோம்
+  // Filter courses based on tab
   const filteredCourses = courses.filter(course => {
-    if (activeTab === "active") return course.progress !== "100%"; // 100% முடியலைனா Active
-    if (activeTab === "completed") return course.progress === "100%"; // 100% முடிஞ்சா Completed
+    if (activeTab === "active") return course.progress !== "100%"; 
+    if (activeTab === "completed") return course.progress === "100%"; 
     return true;
   });
 
@@ -55,7 +55,9 @@ export default function MyCourses() {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col h-full overflow-hidden">
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shrink-0">
+        
+        {/* 🚀 Header (Only Breadcrumb) */}
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center px-8 shrink-0">
           <div className="text-xs text-gray-500 font-bold uppercase">
             <span className="text-black">STUDENT WORKSPACE</span> / MY COURSES
           </div>
@@ -64,7 +66,7 @@ export default function MyCourses() {
         <div className="flex-1 overflow-y-auto">
           <div className="p-8 w-full">
             
-            {/* 🚀 Header Title with Add Button */}
+            {/* Header Title with Add Button */}
             <div className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
               <div>
                 <h2 className="text-3xl font-bold text-black mb-1">Your learning, in one place.</h2>
@@ -94,7 +96,7 @@ export default function MyCourses() {
               </button>
             </div>
 
-            {/* Course Cards */}
+            {/* Course Cards Grid */}
             {loading ? (
               <div className="text-center text-gray-500 py-10">Loading courses...</div>
             ) : filteredCourses.length === 0 ? (
