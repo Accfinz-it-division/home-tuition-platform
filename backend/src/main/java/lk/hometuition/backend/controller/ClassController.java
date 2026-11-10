@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.annotation.PostConstruct;
 import java.util.List;
 
 @RestController
@@ -17,34 +16,16 @@ public class ClassController {
     @Autowired
     private ClassScheduleRepository classRepository;
 
-    // 🚀 Adding Demo Classes to Database
-    @PostConstruct
-    public void initClasses() {
-        if (classRepository.count() == 0) {
-            ClassSchedule c1 = new ClassSchedule();
-            c1.setSubject("Grade 11 Mathematics");
-            c1.setTopic("Quadratic equations");
-            c1.setTeacherName("Kamal Fernando");
-            c1.setDate("24 Oct");
-            c1.setTime("4:00-6:00 PM");
-            c1.setStatus("UPCOMING");
-            classRepository.save(c1);
-
-            ClassSchedule c2 = new ClassSchedule();
-            c2.setSubject("Grade 11 Science");
-            c2.setTopic("Cells & living systems");
-            c2.setTeacherName("Ishara Senanayake");
-            c2.setDate("26 Oct");
-            c2.setTime("2:00-4:00 PM");
-            c2.setStatus("UPCOMING");
-            classRepository.save(c2);
-        }
-    }
-
-    // 🚀 Get all classes
+    // 🚀 Get all classes (Student)
     @GetMapping
     public ResponseEntity<?> getAllClasses() {
-        List<ClassSchedule> classes = classRepository.findAll();
-        return ResponseEntity.ok(classes);
+        return ResponseEntity.ok(classRepository.findAll());
+    }
+
+    // 🚀 Add new class (Admin/Teacher)
+    @PostMapping
+    public ResponseEntity<?> createClass(@RequestBody ClassSchedule classSchedule) {
+        classRepository.save(classSchedule);
+        return ResponseEntity.ok("Class scheduled successfully!");
     }
 }
