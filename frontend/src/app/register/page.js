@@ -16,11 +16,19 @@ export default function Register() {
     nic: "",
     password: ""
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [idImage, setIdImage] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setIdImage(e.target.files[0]);
+    }
   };
 
   const handleRegister = async (e) => {
@@ -60,34 +68,28 @@ export default function Register() {
   };
 
   return (
-    // Reduced main container padding
     <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] p-4 font-sans">
       
-      {/* 🌟 CARD CONTAINER (Reduced max-width to make it less tall) */}
       <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row border border-gray-200">
         
         {/* LEFT SIDE: Navy Blue Background */}
         <div className="hidden md:flex md:w-5/12 bg-[#0f172a] relative items-center justify-center p-8">
           <div className="relative z-10 text-center text-white">
-            <div className="w-12 h-12 bg-[#0f766e] rounded-lg flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span className="text-2xl font-bold">h</span>
-            </div>
-            <h1 className="text-2xl font-serif mb-3 leading-tight">Welcome back to <br/> Home Tuition.</h1>
+            <h1 className="text-2xl font-bold mb-3 leading-tight">Start your journey with <br/> Home Tuition.</h1>
             <p className="text-gray-300 text-xs max-w-xs mx-auto">
-              Pay only if satisfied. Track everything. Hide nothing. Log in to continue your learning journey.
+              Join thousands of students and verified teachers. 100% transparent online tuition in Sri Lanka.
             </p>
           </div>
         </div>
 
-        {/* RIGHT SIDE: Register Form (Reduced paddings and gaps) */}
+        {/* RIGHT SIDE: Register Form */}
         <div className="w-full md:w-7/12 p-6 md:p-8 flex flex-col justify-center">
           
           <div className="text-center mb-4">
-            <h2 className="text-2xl font-serif font-bold text-[#0f172a] mb-1">Create an account</h2>
+            <h2 className="text-2xl font-bold text-[#0f172a] mb-1">Create an account</h2>
             <p className="text-xs text-gray-500">Select your role to get started</p>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="bg-red-50 text-red-500 text-xs p-2 rounded-sm mb-4 border border-red-200">
               {error}
@@ -132,6 +134,8 @@ export default function Register() {
               <input type="text" name="whatsapp" onChange={handleChange} required placeholder="+94 77 123 4567" className="w-full border border-gray-300 rounded-sm py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white" />
             </div>
 
+            {/* 🚀 CONDITIONAL FIELDS BASED ON ROLE */}
+            
             {role === "STUDENT" && (
               <div className="bg-gray-50 p-2.5 rounded-sm border border-gray-200">
                 <label className="flex items-center gap-2 text-[11px] font-bold text-[#0f172a] cursor-pointer mb-1.5">
@@ -147,9 +151,62 @@ export default function Register() {
               </div>
             )}
 
+            {role === "PARENT" && (
+              <div className="bg-gray-50 p-2.5 rounded-sm border border-gray-200">
+                <label className="block text-[9px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Parent's NIC (Required)</label>
+                <input type="text" name="nic" onChange={handleChange} required placeholder="199XXXXXXXXX" className="w-full border border-gray-300 rounded-sm py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white" />
+              </div>
+            )}
+
+            {role === "TEACHER" && (
+              <div className="bg-gray-50 p-2.5 rounded-sm border border-gray-200">
+                <label className="block text-[9px] font-bold text-gray-500 mb-1 uppercase tracking-wider">Teacher's NIC (Required)</label>
+                <input type="text" name="nic" onChange={handleChange} required placeholder="199XXXXXXXXX" className="w-full border border-gray-300 rounded-sm py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white" />
+              </div>
+            )}
+
+            {/* 🚀 FILE UPLOAD BUTTON (Dynamic Label) */}
+            <div>
+              <label className="block text-[10px] font-bold text-[#0f172a] mb-1 uppercase tracking-wider">
+                {role === "TEACHER" ? "Upload ID / Certificate" : "Upload ID"}
+              </label>
+              <div className="border-2 border-dashed border-gray-300 rounded-md p-3 text-center hover:bg-gray-50 transition relative">
+                <input 
+                  type="file" 
+                  accept="image/*,.pdf" 
+                  onChange={handleImageChange}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <div className="text-gray-500 text-xs">
+                  {idImage ? (
+                    <span className="text-[#0f766e] font-bold">✓ {idImage.name} selected</span>
+                  ) : (
+                    <span>📸 Click to upload image or PDF</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* PASSWORD INPUT */}
             <div>
               <label className="block text-[10px] font-bold text-[#0f172a] mb-1 uppercase tracking-wider">Password</label>
-              <input type="password" name="password" onChange={handleChange} required placeholder="Create a strong password" className="w-full border border-gray-300 rounded-sm py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white" />
+              <div className="relative">
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  name="password" 
+                  onChange={handleChange} 
+                  required 
+                  placeholder="Create a strong password" 
+                  className="w-full border border-gray-300 rounded-sm py-2 pl-3 pr-10 text-sm outline-none focus:border-[#0f766e] bg-white" 
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#0f766e]"
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </button>
+              </div>
             </div>
             
             <button type="submit" disabled={loading} className="w-full bg-[#0f172a] text-white py-2.5 mt-2 text-sm font-bold rounded-sm hover:bg-black transition shadow-md disabled:opacity-50">
