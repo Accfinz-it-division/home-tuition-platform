@@ -2,163 +2,174 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function TeachersPage() {
-  const [teachers, setTeachers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("All");
-
-  // 🚀 Categories for Tabs
-  const categories = ["All", "Primary", "Secondary", "O/L", "A/L", "Languages", "Skills"];
+export default function TeacherDashboard() {
+  const router = useRouter();
+  const [userName, setUserName] = useState("Teacher");
+  const [currentDate, setCurrentDate] = useState("");
+  
+  const [dashboardData, setDashboardData] = useState({
+    totalClasses: 0,
+    totalExams: 0,
+    totalResources: 0,
+    monthlyEarnings: "LKR 0",
+    recentClasses: [],
+    recentExams: []
+  });
 
   useEffect(() => {
-    const fetchTeachers = async () => {
+    const storedName = localStorage.getItem("userName");
+    const storedEmail = localStorage.getItem("userEmail"); 
+    
+    if (!storedEmail) {
+      router.push("/login");
+      return;
+    }
+
+    if (storedName) setUserName(storedName);
+    
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    setCurrentDate(new Date().toLocaleDateString('en-GB', dateOptions));
+
+    // 🚀 Fetch Real Data from Backend
+    const fetchDashboardData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/teachers/approved`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/teacher/dashboard?email=${storedEmail}`);
         if (response.ok) {
           const data = await response.json();
-          setTeachers(data);
+          setDashboardData(data);
         }
       } catch (error) {
-        console.error("Failed to fetch teachers", error);
-      } finally {
-        setLoading(false);
+        console.error("Failed to fetch dashboard data", error);
       }
     };
 
-    fetchTeachers();
-  }, []);
+    fetchDashboardData();
+  }, [router]);
 
-  // 🚀 Filter logic based on selected tab
-  const filteredTeachers = teachers.filter((teacher) => {
-    if (activeTab === "All") return true;
-    // Assuming teacher.subject holds the category (e.g., "Primary", "Mathematics")
-    // For now, we will just do a basic check if it matches.
-    return teacher.subject?.toLowerCase().includes(activeTab.toLowerCase());
-  });
-
-  const getInitials = (name) => {
-    if (!name) return "T";
-    return name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+  const handleLogout = () => {
+    localStorage.clear();
+    document.cookie = "userRole=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    router.push("/login");
   };
 
   return (
-    <div className="min-h-screen bg-[#fcfcfc] flex flex-col font-sans">
+    <div className="h-screen bg-[#f8fafc] flex font-sans overflow-hidden">
       
-      {/* Navbar */}
-      <nav className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-        <Link href="/" className="text-2xl font-serif font-bold text-[#0f172a]">
-          Home Tuition
-        </Link>
+      {/* Sidebar */}
+      <aside className="w-64 bg-[#0f172a] text-white hidden md:flex flex-col border-r border-gray-800 h-full shrink-0">
+        <div className="px-6 py-8 border-b border-gray-800">
+          <h1 className="text-xl font-bold text-white mb-1">Home Tuition</h1>
+          <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Teacher Workspace</p>
+        </div>
         
-        <div className="hidden md:flex gap-6 font-medium text-sm text-gray-600">
-          <Link href="/" className="hover:text-[#0f172a] transition">Home</Link>
-          <Link href="/about" className="hover:text-[#0f172a] transition">About</Link>
-          <Link href="/courses" className="hover:text-[#0f172a] transition">Courses</Link>
-          <Link href="/student" className="hover:text-[#0f172a] transition">Students</Link>
-          <Link href="/teacher" className="text-[#0f172a] font-bold">Teachers</Link>
-          <Link href="/faq" className="hover:text-[#0f172a] transition">FAQ</Link>
-          <Link href="/contact" className="hover:text-[#0f172a] transition">Contact</Link>
-        </div>
+        <nav className="flex-1 py-6 px-4 space-y-1 overflow-y-auto">
+          <Link href="/dashboard/teacher" className="block px-4 py-2.5 bg-[#0f766e] text-white text-sm font-bold rounded-sm">Overview</Link>
+          <Link href="/dashboard/teacher/classes" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Classes</Link>
+          <Link href="/dashboard/teacher/attendance" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Attendance</Link>
+          <Link href="/dashboard/teacher/resources" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Resources</Link>
+          <Link href="/dashboard/teacher/exams" className="block px-4 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-sm transition">Exams</Link>
+        </nav>
 
-        <div className="flex gap-4 items-center">
-          <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-[#0f172a]">Log in</Link>
-          <Link href="/register" className="bg-[#0f766e] text-white text-sm font-medium py-2 px-6 rounded-sm hover:bg-[#0d5f58] transition shadow-sm">
-            Get started
-          </Link>
+        <div className="p-4 border-t border-gray-800">
+          <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-gray-400 text-sm hover:text-white transition">Sign out</button>
         </div>
-      </nav>
+      </aside>
 
-      {/* Main Content */}
-      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-10">
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col h-full overflow-hidden">
         
-        <div className="mb-6">
-          <p className="text-xs text-gray-500 mb-3">Home / Great teachers. Lasting confidence.</p>
-          <h1 className="text-4xl font-serif text-[#0f172a] mb-2">Great teachers. Lasting confidence.</h1>
-          <p className="text-sm text-gray-500">Meet verified Sri Lankan educators who care about your progress.</p>
-        </div>
-
-        {/* 🚀 Category Tabs */}
-        <div className="flex gap-4 border-b border-gray-200 mb-8 overflow-x-auto pb-2">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveTab(cat)}
-              className={`pb-2 text-sm font-bold transition whitespace-nowrap ${
-                activeTab === cat 
-                  ? "text-[#0f766e] border-b-2 border-[#0f766e]" 
-                  : "text-gray-500 hover:text-[#0f172a]"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Results Count */}
-        <p className="text-xs text-gray-500 mb-6">{filteredTeachers.length} verified teachers <span className="mx-2">•</span> Recommended for you</p>
-
-        {/* Teachers Grid */}
-        {loading ? (
-          <div className="text-center text-gray-500 py-10">Loading teachers...</div>
-        ) : filteredTeachers.length === 0 ? (
-          <div className="text-center text-gray-500 py-10 border border-dashed border-gray-300 rounded-sm">
-            No verified teachers available in this category.
+        {/* Header */}
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center px-8 shrink-0">
+          <div className="text-xs text-gray-500 font-bold uppercase">
+            <span className="text-black">TEACHER WORKSPACE</span> / OVERVIEW
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            {filteredTeachers.map((teacher) => (
-              <div key={teacher.id} className="bg-white border border-gray-200 rounded-sm p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                
+        </header>
+
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-8 w-full">
+            
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold text-black mb-1">Good morning, {userName}.</h2>
+              <p className="text-sm text-gray-500">{currentDate} • Here is your teaching overview.</p>
+            </div>
+
+            {/* Top Stats (4 Cards) */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
+                <p className="text-xs text-gray-500 mb-1 font-medium">Total Classes</p>
+                <h3 className="text-3xl font-bold text-black">{dashboardData.totalClasses}</h3>
+              </div>
+              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
+                <p className="text-xs text-gray-500 mb-1 font-medium">Total Exams</p>
+                <h3 className="text-3xl font-bold text-black">{dashboardData.totalExams}</h3>
+              </div>
+              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
+                <p className="text-xs text-gray-500 mb-1 font-medium">Resources Uploaded</p>
+                <h3 className="text-3xl font-bold text-black">{dashboardData.totalResources}</h3>
+              </div>
+              <div className="bg-white border border-gray-200 p-5 rounded-sm shadow-sm">
+                <p className="text-xs text-gray-500 mb-1 font-medium">Monthly Earnings</p>
+                <h3 className="text-2xl font-bold text-[#0f766e]">{dashboardData.monthlyEarnings}</h3>
+              </div>
+            </div>
+
+            {/* Middle Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              
+              {/* Next Class / Recent Classes */}
+              <div className="lg:col-span-2 bg-[#0f172a] text-white p-6 rounded-sm shadow-sm flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-4 mb-5">
-                    <div className="w-16 h-16 bg-[#f0efeb] text-[#0f172a] flex items-center justify-center text-xl font-bold rounded-sm border border-gray-200">
-                      {getInitials(teacher.fullName)}
-                    </div>
-                    <span className="bg-[#e6f4f1] text-[#0f766e] text-[10px] font-bold px-2 py-1 rounded-sm border border-[#0f766e]/20 flex items-center gap-1">
-                      ✓ Verified
-                    </span>
-                  </div>
-
-                  <h3 className="text-2xl font-serif text-[#0f172a] mb-1">{teacher.fullName}</h3>
-                  <p className="text-sm font-bold text-[#0f766e] mb-4">{teacher.subject || "Expert Teacher"}</p>
-
-                  <ul className="text-xs text-gray-500 space-y-1 mb-6">
-                    <li>8+ years of teaching experience</li>
-                    <li>National syllabus • Online lessons</li>
-                  </ul>
-
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#0f172a] mb-6">
-                    <span className="text-[#d97706]">★ 4.9</span>
-                    <span className="text-gray-400">•</span>
-                    <span>128 student reviews</span>
-                  </div>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">YOUR NEXT CLASS</p>
+                  {dashboardData.recentClasses.length > 0 ? (
+                    <>
+                      <h3 className="text-2xl font-bold mb-2">{dashboardData.recentClasses[0].topic}</h3>
+                      <p className="text-sm text-gray-300">
+                        {dashboardData.recentClasses[0].subject} • {dashboardData.recentClasses[0].date} • {dashboardData.recentClasses[0].time}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-gray-400">No upcoming classes scheduled.</p>
+                  )}
                 </div>
-
-                {/* 🚀 Link to dynamic profile page */}
-                <Link 
-                  href={`/teacher/${teacher.id}`} 
-                  className="w-full text-center border border-gray-300 text-[#0f172a] py-2 text-sm font-bold rounded-sm hover:bg-gray-50 transition block"
-                >
-                  View profile →
+                <Link href="/dashboard/teacher/classes" className="inline-block mt-6 text-sm font-bold text-[#d97706] hover:text-white transition w-fit">
+                  View All Classes →
                 </Link>
               </div>
-            ))}
-          </div>
-        )}
 
-      </main>
+              {/* Attention */}
+              <div className="bg-white border border-gray-200 p-6 rounded-sm shadow-sm">
+                <h3 className="text-lg font-bold text-black mb-4">Your attention, please</h3>
+                <ul className="space-y-3 text-sm text-gray-600">
+                  <li className="flex justify-between pb-2 border-b border-gray-100"><span>Mark today's attendance</span></li>
+                  <li className="flex justify-between pb-2 border-b border-gray-100"><span>Upload new notes</span></li>
+                  <li className="flex justify-between"><span className="text-[#d97706] font-bold">Grade pending exams</span></li>
+                </ul>
+              </div>
+            </div>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 py-6 px-6 bg-white mt-auto">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-gray-400">© 2026 Home Tuition • Sri Lanka</p>
-          <div className="flex gap-4 text-xs text-gray-400">
-            <span>English / Sinhala / Tamil</span>
-            <span>All times in Sri Lanka (GMT+5:30)</span>
+            {/* Bottom Section: Recent Exams List */}
+            <div className="bg-white border border-gray-200 p-6 rounded-sm shadow-sm">
+              <h3 className="text-lg font-bold text-black mb-4">Recent Exams Created</h3>
+              {dashboardData.recentExams.length > 0 ? (
+                <div className="space-y-4 text-sm text-gray-600">
+                  {dashboardData.recentExams.map((exam) => (
+                    <div key={exam.id} className="flex justify-between border-b border-gray-200 pb-2">
+                      <span className="font-bold text-black">{exam.title}</span>
+                      <span>{exam.subject} • {exam.deadline}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-400 text-sm">No exams created yet.</p>
+              )}
+            </div>
+
           </div>
         </div>
-      </footer>
+      </main>
     </div>
   );
 }
