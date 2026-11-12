@@ -1,9 +1,7 @@
 package lk.hometuition.backend.controller;
 
-import lk.hometuition.backend.entity.TeacherProfile;
-import lk.hometuition.backend.entity.User;
-import lk.hometuition.backend.repository.TeacherProfileRepository;
-import lk.hometuition.backend.repository.UserRepository;
+import lk.hometuition.backend.entity.*;
+import lk.hometuition.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,57 +19,45 @@ public class TeacherController {
     private UserRepository userRepository;
 
     @Autowired
-    private TeacherProfileRepository profileRepository;
+    private ClassScheduleRepository classRepository;
 
-    // 🚀 Get All Approved Teachers with their Profiles
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllTeachers() {
-        List<User> teachers = userRepository.findByRoleAndVerificationStatus("TEACHER", "APPROVED");
+    @Autowired
+    private ExamRepository examRepository;
+
+    @Autowired
+    private ResourceRepository resourceRepository;
+
+    // 🚀 Get Teacher Dashboard Overview Data
+    @GetMapping("/dashboard")
+    public ResponseEntity<?> getTeacherDashboard(@RequestParam String email) {
         
-        List<Map<String, Object>> response = teachers.stream().map(teacher -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put("id", teacher.getId());
-            map.put("fullName", teacher.getFullName());
-            map.put("email", teacher.getEmail());
-            map.put("whatsapp", teacher.getWhatsapp());
-            
-            // Fetch Profile data if exists
-            profileRepository.findByUserId(teacher.getId()).ifPresent(profile -> {
-                map.put("subject", profile.getSubject());
-                map.put("bio", profile.getBio());
-                map.put("qualification", profile.getQualification());
-                map.put("experience", profile.getExperience());
-                map.put("availability", profile.getAvailability());
-            });
-            
-            return map;
-        }).toList();
-
-        return ResponseEntity.ok(response);
-    }
-
-    // 🚀 Get Single Teacher Profile by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getTeacherById(@PathVariable Long id) {
-        User teacher = userRepository.findById(id).orElse(null);
+        User teacher = userRepository.findByEmail(email).orElse(null);
+        
         if (teacher == null || !teacher.getRole().equals("TEACHER")) {
-            return ResponseEntity.badRequest().body("Teacher not found");
+            return ResponseEntity.badRequest().body("Error: Teacher not found or invalid role.");
         }
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", teacher.getId());
-        map.put("fullName", teacher.getFullName());
-        map.put("email", teacher.getEmail());
-        map.put("whatsapp", teacher.getWhatsapp());
+        // Fetch real data
+        List<ClassSchedule> myClasses = classRepository.findAll(); // Filter by teacher in real app
+        List<Exam> myExams = examRepository.findAll();
+        List<Resource> myResources = resourceRepository.findAll();
 
-        profileRepository.findByUserId(teacher.getId()).ifPresent(profile -> {
-            map.put("subject", profile.getSubject());
-            map.put("bio", profile.getBio());
-            map.put("qualification", profile.getQualification());
-            map.put("experience", profile.getExperience());
-            map.put("availability", profile.getAvailability());
-        });
+        // Build response map
+        Map<String, Object> response = new HashMap<>();
+        response.put("teacherName", teacher.getFullName());
+        
+        // Counts for Overview
+        response.put("totalClasses", myClasses.size());
+        response.put("totalExams", myExams.size());
+        response.put("totalResources", myResources.size());
+        
+        // Dummy earnings for now (Can be calculated from Payments later)
+        response.put("monthlyEarnings", "LKR 45,000"); 
 
-        return ResponseEntity.ok(map);
+        // Recent Lists for Short View
+        response.put("recentClasses", myClasses.subList(0, Math.min(3, myClasses.size())));
+        response.put("recentExams", myExams.subList(0, Math.min(3, myExams.size())));
+
+        return ResponseEntity.ok(response);
     }
 }

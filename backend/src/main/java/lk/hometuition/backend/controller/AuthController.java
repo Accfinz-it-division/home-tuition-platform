@@ -25,10 +25,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+        
+        // Check if email already exists
         if (userRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().body("Error: Email is already in use!");
         }
 
+        // Create new user
         User newUser = new User();
         newUser.setFullName(request.getFullName());
         newUser.setEmail(request.getEmail());
@@ -36,7 +39,11 @@ public class AuthController {
         newUser.setRole(request.getRole());
         newUser.setNic(request.getNic());
         newUser.setWhatsapp(request.getWhatsapp());
+        
+        // 🚀 Set default verification status
+        newUser.setVerificationStatus("PENDING");
 
+        // Save to Database
         userRepository.save(newUser);
 
         return ResponseEntity.ok("User registered successfully!");
@@ -54,6 +61,7 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Error: Invalid password!");
         }
 
+        // Build JSON Response
         Map<String, String> response = new HashMap<>();
         response.put("message", "Login successful!");
         response.put("role", user.getRole());

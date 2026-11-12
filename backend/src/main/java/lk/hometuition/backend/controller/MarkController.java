@@ -18,9 +18,9 @@ public class MarkController {
     @PostConstruct
     public void initMarks() {
         if (markRepository.count() == 0) {
-            // Demo data for one student
-            String email = "vidu@gmail.com"; // Make sure this matches your logged-in user
+            String email = "vidu@gmail.com"; // Make sure this matches your student email
 
+            // 🚀 Now uses the parameterized constructor correctly
             markRepository.save(new Mark(null, email, "Mathematics", "Jul", 65));
             markRepository.save(new Mark(null, email, "Mathematics", "Aug", 72));
             markRepository.save(new Mark(null, email, "Mathematics", "Sep", 78));

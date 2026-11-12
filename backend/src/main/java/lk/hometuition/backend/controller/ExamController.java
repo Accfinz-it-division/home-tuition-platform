@@ -21,6 +21,7 @@ public class ExamController {
         return ResponseEntity.ok(examRepository.findAll());
     }
 
+    // 🚀 Create new exam with file URL
     @PostMapping
     public ResponseEntity<?> createExam(@RequestBody Exam exam) {
         examRepository.save(exam);

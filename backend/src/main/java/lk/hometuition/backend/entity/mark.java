@@ -10,12 +10,22 @@ public class Mark {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String studentEmail; // Which student this belongs to
+    private String studentEmail;
     private String subject;
-    private String month; // e.g., "Jul", "Aug"
-    private int score; // 0 to 100
+    private String month;
+    private int score;
 
-    // Getters and Setters
+    public Mark() {
+    }
+
+    public Mark(Long id, String studentEmail, String subject, String month, int score) {
+        this.id = id;
+        this.studentEmail = studentEmail;
+        this.subject = subject;
+        this.month = month;
+        this.score = score;
+    }
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
