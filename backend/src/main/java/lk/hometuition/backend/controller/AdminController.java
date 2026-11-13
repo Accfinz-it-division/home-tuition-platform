@@ -19,7 +19,6 @@ public class AdminController {
     @Autowired
     private UserRepository userRepository;
 
-    // 🚀 Added this missing repository injection
     @Autowired
     private TeacherProfileRepository teacherProfileRepository;
 
@@ -81,5 +80,12 @@ public class AdminController {
         
         teacherProfileRepository.save(profile);
         return ResponseEntity.ok(Map.of("message", "Profile updated successfully!"));
+    }
+
+    // 6. Get All Users
+    @GetMapping("/users")
+    public ResponseEntity<?> getAllUsers() {
+        List<User> allUsers = userRepository.findAll();
+        return ResponseEntity.ok(allUsers);
     }
 }
