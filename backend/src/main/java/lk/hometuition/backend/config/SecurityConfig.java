@@ -26,15 +26,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // Disable CSRF (Not needed for REST APIs)
             .csrf(AbstractHttpConfigurer::disable)
-            
-            // Enable CORS
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            
-            // Allow all API requests
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/api/**", "/uploads/**").permitAll()
                 .anyRequest().authenticated()
             );
 
@@ -44,13 +39,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // 🚀 ALLOW BOTH LOCALHOST AND VERCEL FRONTEND
-        configuration.setAllowedOrigins(List.of(
-            "http://localhost:3000", 
-            "https://home-tuition-platform-one.vercel.app"
-        )); 
-        
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://home-tuition-platform-one.vercel.app"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

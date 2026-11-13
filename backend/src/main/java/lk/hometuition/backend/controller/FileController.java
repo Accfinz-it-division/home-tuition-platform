@@ -1,12 +1,14 @@
 package lk.hometuition.backend.controller;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 @RestController
@@ -14,33 +16,29 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 public class FileController {
 
-    private final Cloudinary cloudinary;
-
-    // 🚀 Initialize Cloudinary with properties
-    public FileController(
-            @Value("${cloudinary.cloud-name}") String cloudName,
-            @Value("${cloudinary.api-key}") String apiKey,
-            @Value("${cloudinary.api-secret}") String apiSecret) {
-        
-        this.cloudinary = new Cloudinary(ObjectUtils.asMap(
-                "cloud_name", cloudName,
-                "api_key", apiKey,
-                "api_secret", apiSecret
-        ));
-    }
+    // 🚀 Define the folder where files will be saved
+    private final String UPLOAD_DIR = "uploads/";
 
     @PostMapping("/upload")
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            // 🚀 Upload to Cloudinary
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
-            
-            // Get the secure URL
-            String fileUrl = uploadResult.get("secure_url").toString();
+            // 1. Create the 'uploads' folder if it doesn't exist
+            File directory = new File(UPLOAD_DIR);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            // 2. Save the file with a unique name
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            Path filePath = Paths.get(UPLOAD_DIR + fileName);
+            Files.write(filePath, file.getBytes());
+
+            // 3. Return the URL (Relative path)
+            String fileUrl = "http://localhost:8080/uploads/" + fileName;
             
             return ResponseEntity.ok(Map.of("url", fileUrl, "message", "File uploaded successfully!"));
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             return ResponseEntity.internalServerError().body("Failed to upload file: " + e.getMessage());
         }
     }

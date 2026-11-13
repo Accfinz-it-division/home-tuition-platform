@@ -16,7 +16,6 @@ export default function TeacherResources() {
     actionUrl: "#"
   });
   
-  // 🚀 State for file upload
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
@@ -38,7 +37,6 @@ export default function TeacherResources() {
     fetchResources();
   }, []);
 
-  // 🚀 Handle File Upload & Save
   const handleAddResource = async (e) => {
     e.preventDefault();
     setUploading(true);
@@ -46,7 +44,6 @@ export default function TeacherResources() {
     try {
       let uploadedUrl = "#";
 
-      // 1. Upload the File first
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
@@ -58,15 +55,14 @@ export default function TeacherResources() {
 
         if (uploadRes.ok) {
           const uploadData = await uploadRes.json();
-          uploadedUrl = `${process.env.NEXT_PUBLIC_API_URL}${uploadData.url}`; // Full URL
+          uploadedUrl = uploadData.url;
         } else {
-          alert("File upload failed!");
+          alert("File upload failed! Check backend console.");
           setUploading(false);
           return;
         }
       }
 
-      // 2. Save Resource Data to Database
       const finalResource = { ...newResource, actionUrl: uploadedUrl };
       
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/resources`, {
@@ -84,6 +80,7 @@ export default function TeacherResources() {
       }
     } catch (error) {
       console.error("Failed to add resource", error);
+      alert("An error occurred.");
     } finally {
       setUploading(false);
     }
@@ -133,7 +130,7 @@ export default function TeacherResources() {
               </button>
             </div>
 
-            {/* 🚀 Upload Form */}
+            {/* Upload Form */}
             {showForm && (
               <div className="bg-white border border-gray-200 p-6 rounded-sm shadow-sm mb-8">
                 <h3 className="text-lg font-bold text-black mb-4">Upload New Resource</h3>
@@ -151,9 +148,8 @@ export default function TeacherResources() {
                     </select>
                   </div>
                   
-                  {/* 🚀 File Upload Input */}
                   <div>
-                    <label className="block text-xs font-bold text-[#0f172a] mb-1">Upload File (PDF/Image)</label>
+                    <label className="block text-xs font-bold text-[#0f172a] mb-1">Upload File (PDF/Image Only)</label>
                     <input 
                       type="file" 
                       accept=".pdf,image/*" 
