@@ -52,77 +52,45 @@ export default function CoursesPage() {
         </div>
       </nav>
 
-      {/* 2. Main Content */}
-      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-12">
-        
-        {/* Header Section (Similar to Home/About) */}
-        <div className="text-center mb-12">
-          <p className="text-xs text-gray-500 mb-3 uppercase tracking-widest">Find your next chapter</p>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-[#0f172a] mb-4">
+      {/* 2. Hero Section */}
+      <section className="bg-[#f8fafc] border-b border-gray-200 py-20 px-6">
+        <div className="max-w-7xl mx-auto text-center">
+          <span className="bg-[#0f766e]/10 text-[#0f766e] px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase mb-6 inline-block border border-[#0f766e]/20">
             Explore Our Courses
+          </span>
+          <h1 className="text-4xl md:text-6xl font-extrabold text-[#0f172a] leading-[1.1] mb-6">
+            Find your next <br />
+            <span className="text-[#0f766e]">chapter.</span>
           </h1>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             From A/L to IT, Languages to Skill Courses. Learn from verified educators and boost your career.
           </p>
         </div>
+      </section>
 
-        {/* Filter Bar (Clean design) */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-          <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-2">Search</label>
-            <input type="text" placeholder="Search courses..." className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm outline-none focus:border-[#0f766e]" />
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-2">Course Type</label>
-            <select className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white">
-              <option>All Types</option>
-              <option>O/L & A/L</option>
-              <option>Government Exams</option>
-              <option>Languages</option>
-              <option>IT & Software</option>
-              <option>Design</option>
-              <option>Business</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-2">Level</label>
-            <select className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white">
-              <option>All Levels</option>
-              <option>Beginner</option>
-              <option>Intermediate</option>
-              <option>Advanced</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-2">Medium</label>
-            <select className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white">
-              <option>English</option>
-              <option>Sinhala</option>
-              <option>Tamil</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Results Count (Sort Removed) */}
-        <div className="mb-6">
+      {/* 3. Courses Grid (No Filters) */}
+      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-12">
+        
+        <div className="mb-8">
           <p className="text-sm text-gray-500">{courses.length} courses available</p>
         </div>
 
-        {/* Course Cards Grid */}
         {loading ? (
           <div className="text-center text-gray-500 py-10">Loading courses...</div>
+        ) : courses.length === 0 ? (
+          <div className="text-center text-gray-500 py-10 border border-dashed border-gray-300 rounded-xl">
+            No courses available at the moment.
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             {courses.map((course) => (
               <div key={course.id} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition group">
                 
-                {/* Card Header Image */}
                 <div className="h-40 bg-[#0f172a] flex items-center justify-center relative overflow-hidden">
                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] to-transparent z-10"></div>
                    <span className="text-4xl relative z-20">📚</span>
                 </div>
 
-                {/* Card Body */}
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-2">
                     <span className="bg-[#f5f2eb] text-[#b45309] text-[10px] font-bold px-2 py-1 rounded-sm tracking-wide">
@@ -134,8 +102,11 @@ export default function CoursesPage() {
                   
                   <div className="flex justify-between items-center pt-4 border-t border-gray-100">
                     <span className="font-bold text-[#0f172a]">{course.price}</span>
-                    <Link href="/login" className="bg-[#0f766e]/10 text-[#0f766e] px-4 py-2 rounded-md text-sm font-bold hover:bg-[#0f766e] hover:text-white transition">
-                      View Course
+                    <Link 
+                      href="/login" 
+                      className="bg-[#0f766e]/10 text-[#0f766e] px-4 py-2 rounded-md text-sm font-bold hover:bg-[#0f766e] hover:text-white transition"
+                    >
+                      Enroll Now
                     </Link>
                   </div>
                 </div>
@@ -157,7 +128,7 @@ export default function CoursesPage() {
 
       </main>
 
-      {/* 3. Footer */}
+      {/* 4. Footer */}
       <footer className="bg-white border-t border-gray-200 pt-12 pb-6 px-6 mt-auto">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="col-span-1 md:col-span-2">

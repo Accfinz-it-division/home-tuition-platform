@@ -1,36 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { useState, useEffect } from "react";
 
-export default function TeachersPage() {
-  const [teachers, setTeachers] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // 🚀 Fetch Approved Teachers
-    const fetchTeachers = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/teacher/all`);
-        if (response.ok) {
-          const data = await response.json();
-          setTeachers(data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch teachers", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTeachers();
-  }, []);
-
-  const getInitials = (name) => {
-    if (!name) return "T";
-    return name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
-  };
-
+export default function TeachersMainPage() {
   return (
     <div className="min-h-screen bg-[#fcfcfc] flex flex-col font-sans">
       
@@ -58,121 +28,98 @@ export default function TeachersPage() {
         </div>
       </nav>
 
-      {/* 2. Main Content */}
-      <main className="flex-grow max-w-7xl mx-auto w-full px-6 py-12">
-        
-        <div className="text-center mb-12">
-          <p className="text-xs text-gray-500 mb-3 uppercase tracking-widest">Meet our experts</p>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-[#0f172a] mb-4">
-            Verified Teachers
-          </h1>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            Learn from Sri Lanka's best educators. Every profile is admin-verified for your peace of mind.
-          </p>
+      {/* 2. Hero Section */}
+      <section className="bg-[#f8fafc] border-b border-gray-200 py-20 px-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div>
+            <span className="bg-[#0f766e]/10 text-[#0f766e] px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase mb-6 inline-block border border-[#0f766e]/20">
+              For Teachers
+            </span>
+            <h1 className="text-4xl md:text-6xl font-extrabold text-[#0f172a] leading-[1.1] mb-6">
+              Teach with <br />
+              <span className="text-[#0f766e]">Trust.</span> Grow with us.
+            </h1>
+            <p className="text-lg text-gray-600 mb-8 max-w-lg">
+              Join Sri Lanka's most transparent online tuition platform. We verify you, so parents trust you. 
+              Manage your classes, students, and earnings all in one place.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link href="/login" className="bg-[#0f766e] text-white px-8 py-4 text-sm font-bold rounded-md shadow-lg shadow-teal-500/30 hover:bg-[#0d5f58] transition text-center">
+                Teacher Dashboard
+              </Link>
+              <Link href="/register" className="bg-white border-2 border-gray-200 text-[#0f172a] px-8 py-4 text-sm font-bold rounded-md hover:border-[#0f172a] transition text-center">
+                Apply to Teach
+              </Link>
+            </div>
+          </div>
+          <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-xl">
+             <img 
+                src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                alt="Teacher teaching online" 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+          </div>
         </div>
+      </section>
 
-        {/* 🚀 Filter Bar (4 Columns) */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+      {/* 3. Features Section */}
+      <section className="py-20 px-6 bg-white w-full">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-[#0f172a] mb-4">Why Teach on HomeTuition.lk?</h2>
+            <p className="text-gray-500 max-w-2xl mx-auto">
+              We provide the tools, the trust, and the platform. You focus on teaching.
+            </p>
+          </div>
           
-          {/* 1. Find Teacher */}
-          <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-2">Find your teacher</label>
-            <input type="text" placeholder="Search name..." className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm outline-none focus:border-[#0f766e]" />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-[#f8fafc] border border-gray-200 p-8 rounded-xl shadow-sm hover:shadow-md transition">
+              <div className="w-12 h-12 bg-[#0f766e]/10 text-[#0f766e] rounded-lg flex items-center justify-center text-2xl mb-4">🛡️</div>
+              <h3 className="text-xl font-bold text-[#0f172a] mb-2">Verified Badge</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">Get a verified badge after our admin checks your NIC, certificates, and conducts an interview.</p>
+            </div>
 
-          {/* 2. Course Type */}
-          <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-2">Course Type</label>
-            <select className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white">
-              <option>All Types</option>
-              <option>O/L & A/L</option>
-              <option>Government Exams</option>
-              <option>Languages</option>
-              <option>IT & Software</option>
-              <option>Design</option>
-              <option>Business</option>
-              <option>Music</option>
-              <option>Photography</option>
-            </select>
-          </div>
+            <div className="bg-[#f8fafc] border border-gray-200 p-8 rounded-xl shadow-sm hover:shadow-md transition">
+              <div className="w-12 h-12 bg-[#0f766e]/10 text-[#0f766e] rounded-lg flex items-center justify-center text-2xl mb-4">💻</div>
+              <h3 className="text-xl font-bold text-[#0f172a] mb-2">Easy Class Management</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">Auto-generated Zoom links, easy attendance marking, and student progress tracking.</p>
+            </div>
 
-          {/* 3. Medium */}
-          <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-2">Medium</label>
-            <select className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white">
-              <option>All Languages</option>
-              <option>Sinhala</option>
-              <option>English</option>
-              <option>Tamil</option>
-            </select>
-          </div>
-
-          {/* 4. Grade / Level */}
-          <div>
-            <label className="block text-xs font-bold text-[#0f172a] mb-2">Grade / Level</label>
-            <select className="w-full border border-gray-300 rounded-md py-2 px-3 text-sm outline-none focus:border-[#0f766e] bg-white">
-              <option>All Grades</option>
-              <option>Primary (Grade 1-5)</option>
-              <option>Junior Secondary (Grade 6-9)</option>
-              <option>O/L (Grade 10-11)</option>
-              <option>A/L (Grade 12-13)</option>
-              <option>Grade 5 Scholarship</option>
-              <option>Government Exams</option>
-              <option>Professional / Skill</option>
-            </select>
+            <div className="bg-[#f8fafc] border border-gray-200 p-8 rounded-xl shadow-sm hover:shadow-md transition">
+              <div className="w-12 h-12 bg-[#0f766e]/10 text-[#0f766e] rounded-lg flex items-center justify-center text-2xl mb-4">💰</div>
+              <h3 className="text-xl font-bold text-[#0f172a] mb-2">Secure Payouts</h3>
+              <p className="text-sm text-gray-600 leading-relaxed">Students pay via PayHere. You get your earnings securely transferred to your bank.</p>
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Results Count */}
-        <p className="text-sm text-gray-500 mb-6">{teachers.length} teachers available</p>
-
-        {/* 🚀 Teachers Grid */}
-        {loading ? (
-          <div className="text-center text-gray-500 py-10">Loading teachers...</div>
-        ) : teachers.length === 0 ? (
-          <div className="text-center text-gray-500 py-10 border border-dashed border-gray-300 rounded-xl">
-            No verified teachers available right now.
+      {/* 4. Stats Section */}
+      <section className="py-20 px-6 bg-[#0f172a] w-full">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-white mb-12">Join our growing community</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-4xl font-extrabold text-white">500+</h3>
+              <p className="text-xs text-gray-400 uppercase tracking-widest mt-2">Verified Teachers</p>
+            </div>
+            <div>
+              <h3 className="text-4xl font-extrabold text-white">10k+</h3>
+              <p className="text-xs text-gray-400 uppercase tracking-widest mt-2">Active Students</p>
+            </div>
+            <div>
+              <h3 className="text-4xl font-extrabold text-white">LKR 150k</h3>
+              <p className="text-xs text-gray-400 uppercase tracking-widest mt-2">Avg Monthly Earnings</p>
+            </div>
+            <div>
+              <h3 className="text-4xl font-extrabold text-white">100%</h3>
+              <p className="text-xs text-gray-400 uppercase tracking-widest mt-2">Transparent System</p>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            {teachers.map((teacher) => (
-              <div key={teacher.id} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                
-                <div>
-                  <div className="flex items-center gap-4 mb-5">
-                    <div className="w-16 h-16 bg-[#f0efeb] text-[#0f172a] flex items-center justify-center text-xl font-bold rounded-full border border-gray-200">
-                      {getInitials(teacher.fullName)}
-                    </div>
-                    <span className="bg-[#e6f4f1] text-[#0f766e] text-[10px] font-bold px-2 py-1 rounded-sm border border-[#0f766e]/20 flex items-center gap-1">
-                      ✓ Verified
-                    </span>
-                  </div>
+        </div>
+      </section>
 
-                  <h3 className="text-xl font-bold text-[#0f172a] mb-1">{teacher.fullName}</h3>
-                  
-                  {/* Real Subject from Database */}
-                  <p className="text-sm font-bold text-[#0f766e] mb-4">{teacher.subject || "Expert Instructor"}</p>
-
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#0f172a] mb-6">
-                    <span className="text-[#d97706]">★ 4.9</span>
-                    <span className="text-gray-400">•</span>
-                    <span>128 student reviews</span>
-                  </div>
-                </div>
-
-                <Link 
-                  href={`/teacher/${teacher.id}`} 
-                  className="w-full text-center border border-gray-300 text-[#0f172a] py-2 text-sm font-bold rounded-sm hover:bg-gray-50 transition block"
-                >
-                  View profile →
-                </Link>
-              </div>
-            ))}
-          </div>
-        )}
-      </main>
-
-      {/* 3. Footer */}
+      {/* 5. Footer */}
       <footer className="bg-white border-t border-gray-200 pt-12 pb-6 px-6 mt-auto">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="col-span-1 md:col-span-2">
